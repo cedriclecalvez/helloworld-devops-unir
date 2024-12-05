@@ -1,3 +1,7 @@
+# helloworld-devops-unir
+
+It's a calculator project using Python, Flask, and Jenkins for the CICD.
+
 # Repo para EU - DevOps&Cloud - UNIR
 
 Este repositorio incluye un proyecto sencillo para demostrar los conceptos de pruebas unitarias, pruebas de servicio, uso de Wiremock y pruebas de rendimiento
