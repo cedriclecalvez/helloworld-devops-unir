@@ -23,7 +23,6 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                // Installer les dépendances dans l'environnement virtuel
                 bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest Flask'
             }
         }
@@ -33,16 +32,16 @@ pipeline {
             parallel{
                 stage('Start Flask API') {
                     steps {
-                        timeout(time: 2, unit: 'MINUTES') {
-                            echo 'Start Flask service ...'
-                            bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m flask run'
+                        timeout(time: 30, unit: 'SECONDS') {
+                            echo 'Starting Flask service in background...'
+                            bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m flask run'
                         }
                     }
                 }
                  stage('Start Wiremock Service') {
                     steps {
-                        timeout(time: 3, unit: 'MINUTES') {
-                            echo 'Start Wiremock service ...'
+                        timeout(time: 30, unit: 'SECONDS') {
+                            echo 'Starting Wiremock service in background...'
                             bat 'icacls C:\\ProgramData\\Jenkins\\wiremock-standalone-3.10.0.jar'
                             bat 'start /B java -Dfile.encoding=UTF-8 -jar C:\\ProgramData\\Jenkins\\wiremock-standalone-3.10.0.jar --port 9090 --root-dir %WORKSPACE%\\test\\wiremock'
                             echo 'WireMock started in background'
@@ -70,9 +69,24 @@ pipeline {
     }
     post {
         always {
-            echo 'Cleaning up...'
-            // Actions à effectuer après le pipeline, comme le nettoyage
-            bat 'call ${VIRTUAL_ENV}\\Scripts\\deactivate' // Déactivation (optionnelle)
+            script {
+                try {
+                    echo 'Cleaning up...'
+                    
+                    bat 'taskkill /F /IM python.exe /T'
+                    bat 'taskkill /F /IM java.exe /T'
+                } catch (Exception e) {
+                    echo "Cleanup failed: ${e.getMessage()}"
+                }
+                bat 'call ${VIRTUAL_ENV}\\Scripts\\deactivate' 
+            }
+            archiveArtifacts artifacts: '**/result-*.xml', fingerprint: true
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed.'
         }
     }
 }
