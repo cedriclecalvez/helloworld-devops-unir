@@ -1,8 +1,7 @@
 pipeline {
     agent any
     environment {
-        API_HOST = 'localhost:5000'
-        VIRTUAL_ENV = '.venv' // Nom de votre environnement virtuel
+        VIRTUAL_ENV = '.venv'
     }
     stages {
         stage('Clone Repo') {
