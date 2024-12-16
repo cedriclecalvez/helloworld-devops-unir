@@ -13,8 +13,10 @@ pipeline {
         stage('Clone Repo') {
             steps {
                 script {
+                     cleanWs()
                            logEnvironment()
                         }
+                       
                 git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
             }
         }
