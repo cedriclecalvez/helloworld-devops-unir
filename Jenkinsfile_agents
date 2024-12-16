@@ -34,8 +34,8 @@ pipeline {
                 script {
                            logEnvironment()
                         }
-                bat 'python -m venv ${VIRTUAL_ENV}'
-                stash name: 'workspace', includes: 'app/**/*, test/**/*, ${VIRTUAL_ENV}/**/*'
+                bat 'python -m venv ${env.VIRTUAL_ENV}'
+                stash name: 'workspace', includes: 'app/**/*, test/**/*, ${env.VIRTUAL_ENV}/**/*'
             }
         }
         stage('Install Dependencies') {
@@ -43,7 +43,7 @@ pipeline {
                 script {
                            logEnvironment()
                         }
-                bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest Flask'
+                bat 'call ${env.VIRTUAL_ENV}\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest Flask'
             }
         }
         stage('Stash Codebase') {
@@ -69,7 +69,7 @@ pipeline {
                         }
                         timeout(time: 60, unit: 'SECONDS') {
                             echo 'Starting Flask service in background...'
-                            bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m flask run --port=5000'
+                            bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call ${env.VIRTUAL_ENV}\\Scripts\\activate.bat && ${env.VIRTUAL_ENV}\\Scripts\\python -m flask run --port=5000'
                         }
                     
                     }
@@ -99,7 +99,7 @@ pipeline {
                         unstash 'config'
                         unstash 'workspace'
                         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
-                            bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && set PYTHONPATH=%WORKSPACE% && ${VIRTUAL_ENV}\\Scripts\\python -m pytest --junitxml=result-unit.xml test\\unit'
+                            bat 'call ${env.VIRTUAL_ENV}\\Scripts\\activate.bat && set PYTHONPATH=%WORKSPACE% && ${env.VIRTUAL_ENV}\\Scripts\\python -m pytest --junitxml=result-unit.xml test\\unit'
                             junit 'result-unit.xml'
                             stash name: 'unit-test-results', includes: 'result-unit.xml'
                         }
@@ -116,7 +116,7 @@ pipeline {
                         unstash 'config'
                         unstash 'workspace'                        
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m pytest --junitxml=result-rest.xml test\\rest'
+                            bat 'call ${env.VIRTUAL_ENV}\\Scripts\\activate.bat && ${env.VIRTUAL_ENV}\\Scripts\\python -m pytest --junitxml=result-rest.xml test\\rest'
                             junit 'result-rest.xml'
                             stash name: 'rest-test-results', includes: 'result-rest.xml'
                         }
@@ -158,6 +158,6 @@ def logEnvironment() {
     bat 'whoami'
     bat 'hostname'
     bat 'echo %WORKSPACE%'
-    echo '${VIRTUAL_ENV}'
+    echo '${env.VIRTUAL_ENV}'
     bat 'dir'
 }
