@@ -39,6 +39,7 @@ pipeline {
                            logEnvironment()
                         }
                 bat 'call %WORKSPACE%\\.venv\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest Flask'
+                bat 'call %WORKSPACE%\\.venv\\Scripts\\activate.bat && pip show pytest'  // Vérifie que pytest est installé
             }
         }
         stage('Stash Codebase') {
