@@ -38,7 +38,7 @@ pipeline {
                 script {
                            logEnvironment()
                         }
-                bat 'call .venv\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest Flask'
+                bat 'call %WORKSPACE%\\.venv\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest Flask'
             }
         }
         stage('Stash Codebase') {
@@ -111,7 +111,7 @@ pipeline {
                         unstash 'config'
                         unstash 'workspace'                        
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            bat 'call .venv\\Scripts\\activate.bat && %WORKSPACE%\\.venv\\Scripts\\python -m pytest --junitxml=result-rest.xml test\\rest'
+                            bat 'call %WORKSPACE%\\.venv\\Scripts\\activate.bat && %WORKSPACE%\\.venv\\Scripts\\python -m pytest --junitxml=result-rest.xml test\\rest'
                             junit 'result-rest.xml'
                             stash name: 'rest-test-results', includes: 'result-rest.xml'
                         }
