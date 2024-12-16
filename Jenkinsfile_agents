@@ -36,7 +36,7 @@ pipeline {
                 script {
                            logEnvironment()
                         }
-                bat 'call .venv\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest Flask'
+                bat 'call %WORKSPACE%\\.venv\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest Flask'
             }
         }
         stage('Stash Codebase') {
@@ -62,7 +62,7 @@ pipeline {
                         }
                         timeout(time: 60, unit: 'SECONDS') {
                             echo 'Starting Flask service in background...'
-                            bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call .venv\\Scripts\\activate.bat && .venv\\Scripts\\python -m flask run --port=5000'
+                            bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call %WORKSPACE%\\.venv\\Scripts\\activate.bat && %WORKSPACE%\\.venv\\Scripts\\python -m flask run --port=5000'
                         }
                     
                     }
@@ -92,7 +92,7 @@ pipeline {
                         unstash 'config'
                         unstash 'workspace'
                         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
-                            bat 'call .venv\\Scripts\\activate.bat && set PYTHONPATH=%WORKSPACE% && .venv\\Scripts\\python -m pytest --junitxml=result-unit.xml test\\unit'
+                            bat 'call %WORKSPACE%\\.venv\\Scripts\\activate.bat && set PYTHONPATH=%WORKSPACE% && %WORKSPACE%\\.venv\\Scripts\\python -m pytest --junitxml=result-unit.xml test\\unit'
                             junit 'result-unit.xml'
                             stash name: 'unit-test-results', includes: 'result-unit.xml'
                         }
@@ -109,7 +109,7 @@ pipeline {
                         unstash 'config'
                         unstash 'workspace'                        
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            bat 'call .venv\\Scripts\\activate.bat && .venv\\Scripts\\python -m pytest --junitxml=result-rest.xml test\\rest'
+                            bat 'call %WORKSPACE%\\.venv\\Scripts\\activate.bat && %WORKSPACE%\\.venv\\Scripts\\python -m pytest --junitxml=result-rest.xml test\\rest'
                             junit 'result-rest.xml'
                             stash name: 'rest-test-results', includes: 'result-rest.xml'
                         }
