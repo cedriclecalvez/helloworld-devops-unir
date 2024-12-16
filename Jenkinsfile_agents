@@ -1,0 +1,153 @@
+pipeline {
+    agent any
+    environment {
+        VIRTUAL_ENV = '.venv' 
+    }
+    stages {
+        stage('Clone Repo') {
+            steps {
+                script {
+                           logEnvironment()
+                        }
+                git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
+            }
+        }
+        stage('Build') {
+            steps {
+                script {
+                           logEnvironment()
+                        }
+                echo 'NO HAY QUE COMPILAR. ESTO ES PYTHON'
+                bat "dir"
+            }
+        }
+        stage('Setup Virtual Environment') {
+            steps {
+                script {
+                           logEnvironment()
+                        }
+                bat 'python -m venv ${VIRTUAL_ENV}'
+                stash name: 'workspace', includes: 'app/**/*, test/**/*, ${VIRTUAL_ENV}/**/*'
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                script {
+                           logEnvironment()
+                        }
+                bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest Flask'
+            }
+        }
+        stage('Stash Codebase') {
+            steps {
+                script {
+                           logEnvironment()
+                           echo 'Creating config directory...'
+                           bat 'if exist config rmdir /S /Q config'
+                           bat 'mkdir config'
+                           bat 'echo "sample config file" > config/sample-config.txt'
+                        }
+                
+                stash name: 'config', includes: '/config/**'
+            }
+        }
+        
+        stage('Tests'){
+            parallel{
+                stage('Start Flask API') {
+                    steps {
+                        script {
+                           logEnvironment()
+                        }
+                        timeout(time: 30, unit: 'SECONDS') {
+                            echo 'Starting Flask service in background...'
+                            bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m flask run --port=5000'
+                        }
+                    
+                    }
+                }
+                 stage('Start Wiremock Service') {
+                    steps {
+                        script {
+                           logEnvironment()
+                        }
+                        timeout(time: 30, unit: 'SECONDS') {
+                            echo 'Starting Wiremock service in background...'
+                            bat 'start /B java -Dfile.encoding=UTF-8 -jar C:\\ProgramData\\Jenkins\\wiremock-standalone-3.10.0.jar --port 9090 --root-dir %WORKSPACE%\\test\\wiremock'
+                            echo 'WireMock started in background'
+                        }
+                    }
+                 }
+                
+                stage('Run Unit Tests') {
+                    agent {
+                        label 'agent1'
+                    }
+                    steps {
+                        script {
+                            logEnvironment()
+                        }
+                        unstash 'config'
+                        unstash 'workspace'
+                        catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
+                            bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && set PYTHONPATH=%WORKSPACE% && ${VIRTUAL_ENV}\\Scripts\\python -m pytest --junitxml=result-unit.xml test\\unit'
+                            junit 'result-unit.xml'
+                            stash name: 'unit-test-results', includes: 'result-unit.xml'
+                        }
+                    }
+                }
+                stage('Run REST Tests') {
+                    agent {
+                        label 'agent2'
+                    }
+                    steps {
+                        script {
+                            logEnvironment()
+                        }
+                        unstash 'config'
+                        unstash 'workspace'                        
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                            bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m pytest --junitxml=result-rest.xml test\\rest'
+                            junit 'result-rest.xml'
+                            stash name: 'rest-test-results', includes: 'result-rest.xml'
+                        }
+                    }
+                }
+            }
+        }
+        stage('Test Results') {
+            steps {
+                script {
+                    echo 'Unstashing and displaying test results...'
+                    unstash 'unit-test-results'   
+                    unstash 'rest-test-results'  
+                    bat 'type result-unit.xml'
+                    bat 'type result-rest.xml'
+                }
+                junit '**/result-*.xml' 
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: '**/result-*.xml', fingerprint: true
+            cleanWs()
+            echo 'Cleaning done and artifacts archived.'
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            cleanWs()
+            echo 'Pipeline failed.'
+        }
+    }
+}
+
+
+def logEnvironment() {
+    bat 'whoami'
+    bat 'hostname'
+    bat 'echo %WORKSPACE%'
+    bat 'dir'
+}
