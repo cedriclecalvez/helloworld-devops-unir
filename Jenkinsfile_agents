@@ -30,7 +30,6 @@ pipeline {
                            logEnvironment()
                         }
                 bat 'python -m venv .venv'
-                stash name: 'workspace', includes: 'app/**/*, test/**/*, .venv/**/*'
             }
         }
         stage('Install Dependencies') {
@@ -51,7 +50,7 @@ pipeline {
                            bat 'mkdir config'
                            bat 'echo "sample config file" > config/sample-config.txt'
                         }
-                
+                stash name: 'workspace', includes: 'app/**/*, test/**/*, .venv/**/*'                
                 stash name: 'config', includes: '/config/**'
             }
         }
