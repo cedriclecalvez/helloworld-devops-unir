@@ -3,12 +3,13 @@ pipeline {
     environment {
         VIRTUAL_ENV = '.venv' 
     }
-     stage('Cleanup') {
+     
+    stages {
+        stage('Cleanup') {
             steps {
                 deleteDir()
             }
         }
-    stages {
         stage('Clone Repo') {
             steps {
                 script {
