@@ -94,7 +94,7 @@ pipeline {
                         unstash 'config'
                         unstash 'workspace'
                         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
-                            bat 'call C:\\Users\\cedri\\Jenkins_agents\\workspace\\Devops-Cloud-Unir\\helloworld\\test200\\.venv\\Scripts\\activate.bat && set PYTHONPATH=. && .venv\\Scripts\\python -m pytest --junitxml=result-unit.xml test\\unit'
+                            bat 'call C:\\Users\\cedri\\Jenkins_agents\\workspace\\Devops-Cloud-Unir\\helloworld\\test200\\.venv\\Scripts\\activate.bat && set PYTHONPATH=%WORKSPACE% && .venv\\Scripts\\python -m pytest --junitxml=result-unit.xml test\\unit'
                             junit 'result-unit.xml'
                             stash name: 'unit-test-results', includes: 'result-unit.xml'
                         }
