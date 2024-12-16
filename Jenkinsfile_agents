@@ -3,6 +3,11 @@ pipeline {
     environment {
         VIRTUAL_ENV = '.venv' 
     }
+     stage('Cleanup') {
+            steps {
+                deleteDir()
+            }
+        }
     stages {
         stage('Clone Repo') {
             steps {
@@ -73,6 +78,7 @@ pipeline {
                         }
                         timeout(time: 30, unit: 'SECONDS') {
                             echo 'Starting Wiremock service in background...'
+                            bat 'icacls C:\\ProgramData\\Jenkins\\wiremock-standalone-3.10.0.jar'
                             bat 'start /B java -Dfile.encoding=UTF-8 -jar C:\\ProgramData\\Jenkins\\wiremock-standalone-3.10.0.jar --port 9090 --root-dir %WORKSPACE%\\test\\wiremock'
                             echo 'WireMock started in background'
                         }
@@ -149,5 +155,6 @@ def logEnvironment() {
     bat 'whoami'
     bat 'hostname'
     bat 'echo %WORKSPACE%'
+    echo '${VIRTUAL_ENV}'
     bat 'dir'
 }
