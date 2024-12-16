@@ -1,19 +1,12 @@
 pipeline {
     agent any
-    environment {
-        VIRTUAL_ENV = '.venv' 
-    }
+    
      
     stages {
-        stage('Cleanup') {
-            steps {
-                deleteDir()
-            }
-        }
+       
         stage('Clone Repo') {
             steps {
                 script {
-                     cleanWs()
                            logEnvironment()
                         }
                        
