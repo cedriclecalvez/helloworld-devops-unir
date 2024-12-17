@@ -5,7 +5,7 @@ pipeline {
     }
      environment {
         VIRTUAL_ACTIVATE_ENV = '.venv\\Scripts\\activate.bat'
-        PATH_LOCAL_JENKINS_ENV = '%PATH_LOCAL_JENKINS_ENV%'
+        PATH_LOCAL_JENKINS_ENV = 'C:\\programdata\\jenkins\\.jenkins\\workspace\\devops-cloud-unir\\helloworld\\test200\\.venv\\Scripts'
     }
      
     stages {
@@ -24,6 +24,7 @@ pipeline {
                            logEnvironment()
                         }
                 echo 'NO HAY QUE COMPILAR. ESTO ES PYTHON'
+                bat "dir"
             }
         }
         stage('Setup Virtual Env && Install Dependancies') {
