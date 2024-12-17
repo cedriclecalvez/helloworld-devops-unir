@@ -33,7 +33,7 @@ pipeline {
                            logEnvironment()
                         }
                 bat 'python -m venv .venv'
-                bat 'call ${VIRTUAL_ACTIVATE_ENV} && python -m pip install --upgrade pip && pip install pytest Flask'
+                bat 'call %VIRTUAL_ACTIVATE_ENV% && python -m pip install --upgrade pip && pip install pytest Flask'
             }
         }
         // stage('Setup Virtual Environment') {
@@ -75,7 +75,7 @@ pipeline {
                         }
                         timeout(time: 40, unit: 'SECONDS') {
                             echo 'Starting Flask service in background...'
-                            bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call ${VIRTUAL_ACTIVATE_ENV} && .venv\\Scripts\\python -m flask run --port=5000'
+                            bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call %VIRTUAL_ACTIVATE_ENV% && .venv\\Scripts\\python -m flask run --port=5000'
                         }
                     
                     }
@@ -105,7 +105,7 @@ pipeline {
                         unstash 'config'
                         unstash 'workspace'
                         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
-                            bat 'call ${VIRTUAL_ACTIVATE_ENV} && set PYTHONPATH=%WORKSPACE% && C:\\programdata\\jenkins\\.jenkins\\workspace\\devops-cloud-unir\\helloworld\\test200\\.venv\\Scripts\\python -m pytest --junitxml=result-unit.xml test\\unit'
+                            bat 'call %VIRTUAL_ACTIVATE_ENV% && set PYTHONPATH=%WORKSPACE% && C:\\programdata\\jenkins\\.jenkins\\workspace\\devops-cloud-unir\\helloworld\\test200\\.venv\\Scripts\\python -m pytest --junitxml=result-unit.xml test\\unit'
                             junit 'result-unit.xml'
                             stash name: 'unit-test-results', includes: 'result-unit.xml'
                         }
@@ -122,7 +122,7 @@ pipeline {
                         unstash 'config'
                         unstash 'workspace'                        
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            bat 'call ${VIRTUAL_ACTIVATE_ENV} && C:\\programdata\\jenkins\\.jenkins\\workspace\\devops-cloud-unir\\helloworld\\test200\\.venv\\Scripts\\python -m pytest --junitxml=result-rest.xml test\\rest'
+                            bat 'call %VIRTUAL_ACTIVATE_ENV% && C:\\programdata\\jenkins\\.jenkins\\workspace\\devops-cloud-unir\\helloworld\\test200\\.venv\\Scripts\\python -m pytest --junitxml=result-rest.xml test\\rest'
                             junit 'result-rest.xml'
                             stash name: 'rest-test-results', includes: 'result-rest.xml'
                         }
