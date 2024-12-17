@@ -5,7 +5,7 @@ pipeline {
     }
      environment {
         VIRTUAL_ACTIVATE_ENV = '.venv\\Scripts\\activate.bat'
-        PATH_LOCAL_JENKINS_ENV = 'C:\\programdata\\jenkins\\.jenkins\\workspace\\devops-cloud-unir\\helloworld\\test200\\.venv\\Scripts'
+        PATH_LOCAL_JENKINS_ENV = 'C:\\programdata\\jenkins\\.jenkins\\workspace\\devops-cloud-unir\\helloworld\\O24-test8-distribucion-agentes-script-scm\\.venv\\Scripts'
     }
      
     stages {
