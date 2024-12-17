@@ -31,7 +31,7 @@ pipeline {
             parallel{
                 stage('Start Flask API') {
                     steps {
-                        timeout(time: 30, unit: 'SECONDS') {
+                        timeout(time: 50, unit: 'SECONDS') {
                             echo 'Starting Flask service in background...'
                             bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m flask run'
                         }
@@ -68,18 +68,9 @@ pipeline {
     }
     post {
         always {
-            script {
-                try {
-                    echo 'Cleaning up...'
-                    
-                    bat 'taskkill /F /IM python.exe /T'
-                    bat 'taskkill /F /IM java.exe /T'
-                } catch (Exception e) {
-                    echo "Cleanup failed: ${e.getMessage()}"
-                }
-                bat 'call ${VIRTUAL_ENV}\\Scripts\\deactivate' 
-            }
             archiveArtifacts artifacts: '**/result-*.xml', fingerprint: true
+            cleanWs()
+            echo 'Cleaning done and artifacts archived.'
         }
         success {
             echo 'Pipeline completed successfully!'
