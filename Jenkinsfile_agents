@@ -1,7 +1,7 @@
 pipeline {
     agent any
      options {
-        skipDefaultCheckout() // This will skip the default checkout step
+        skipDefaultCheckout() 
     }
      
     stages {
@@ -11,7 +11,6 @@ pipeline {
                 script {
                            logEnvironment()
                         }
-                       
                 git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
             }
         }
@@ -24,23 +23,31 @@ pipeline {
                 bat "dir"
             }
         }
-        stage('Setup Virtual Environment') {
+        stage('Setup Virtual Env && Install Dependancies') {
             steps {
                 script {
                            logEnvironment()
                         }
                 bat 'python -m venv .venv'
-            }
-        }
-        stage('Install Dependencies') {
-            steps {
-                script {
-                           logEnvironment()
-                        }
                 bat 'call %WORKSPACE%\\.venv\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest Flask'
-                bat 'call %WORKSPACE%\\.venv\\Scripts\\activate.bat && pip show pytest'  // Vérifie que pytest est installé
             }
         }
+        // stage('Setup Virtual Environment') {
+        //     steps {
+        //         script {
+        //                    logEnvironment()
+        //                 }
+        //         bat 'python -m venv .venv'
+        //     }
+        // }
+        // stage('Install Dependencies') {
+        //     steps {
+        //         script {
+        //                    logEnvironment()
+        //                 }
+        //         bat 'call %WORKSPACE%\\.venv\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest Flask'
+        //     }
+        // }
         stage('Stash Codebase') {
             steps {
                 script {
@@ -62,7 +69,7 @@ pipeline {
                         script {
                            logEnvironment()
                         }
-                        timeout(time: 30, unit: 'SECONDS') {
+                        timeout(time: 40, unit: 'SECONDS') {
                             echo 'Starting Flask service in background...'
                             bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call .venv\\Scripts\\activate.bat && .venv\\Scripts\\python -m flask run --port=5000'
                         }
@@ -74,7 +81,7 @@ pipeline {
                         script {
                            logEnvironment()
                         }
-                        timeout(time: 30, unit: 'SECONDS') {
+                        timeout(time: 40, unit: 'SECONDS') {
                             echo 'Starting Wiremock service in background...'
                             bat 'icacls C:\\ProgramData\\Jenkins\\wiremock-standalone-3.10.0.jar'
                             bat 'start /B java -Dfile.encoding=UTF-8 -jar C:\\ProgramData\\Jenkins\\wiremock-standalone-3.10.0.jar --port 9090 --root-dir %WORKSPACE%\\test\\wiremock'
@@ -94,7 +101,6 @@ pipeline {
                         unstash 'config'
                         unstash 'workspace'
                         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
-                             bat 'call %WORKSPACE%\\.venv\\Scripts\\activate.bat && pip list' 
                             bat 'call %WORKSPACE%\\.venv\\Scripts\\activate.bat && set PYTHONPATH=%WORKSPACE% && C:\\programdata\\jenkins\\.jenkins\\workspace\\devops-cloud-unir\\helloworld\\test200\\.venv\\Scripts\\python -m pytest --junitxml=result-unit.xml test\\unit'
                             junit 'result-unit.xml'
                             stash name: 'unit-test-results', includes: 'result-unit.xml'
@@ -112,7 +118,6 @@ pipeline {
                         unstash 'config'
                         unstash 'workspace'                        
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                             bat 'call %WORKSPACE%\\.venv\\Scripts\\activate.bat && pip list' 
                             bat 'call %WORKSPACE%\\.venv\\Scripts\\activate.bat && C:\\programdata\\jenkins\\.jenkins\\workspace\\devops-cloud-unir\\helloworld\\test200\\.venv\\Scripts\\python -m pytest --junitxml=result-rest.xml test\\rest'
                             junit 'result-rest.xml'
                             stash name: 'rest-test-results', includes: 'result-rest.xml'
@@ -155,6 +160,5 @@ def logEnvironment() {
     bat 'whoami'
     bat 'hostname'
     bat 'echo %WORKSPACE%'
-    echo '.venv'
     bat 'dir'
 }
