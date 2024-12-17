@@ -61,6 +61,10 @@ class TestCalculate(unittest.TestCase):
         self.assertEqual(0, self.calc.substract(0, 0))
         self.assertEqual(0, self.calc.substract(0, 0))
         self.assertRaises(TypeError, self.calc.substract, "0", 0)
+
+    def test_divide_method_raises_error_on_zero_divisor(self):
+        self.assertRaises(ZeroDivisionError, self.calc.divide, 14, 0)
+        self.assertRaises(ZeroDivisionError, self.calc.divide, -6, 0)
         
 if __name__ == "__main__":  # pragma: no cover
     unittest.main()
