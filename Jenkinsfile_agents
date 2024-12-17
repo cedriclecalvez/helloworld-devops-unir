@@ -62,7 +62,7 @@ pipeline {
                         script {
                            logEnvironment()
                         }
-                        timeout(time: 1, unit: 'MINUTES') {
+                        timeout(time: 30, unit: 'SECONDS') {
                             echo 'Starting Flask service in background...'
                             bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call .venv\\Scripts\\activate.bat && .venv\\Scripts\\python -m flask run --port=5000'
                         }
@@ -74,7 +74,7 @@ pipeline {
                         script {
                            logEnvironment()
                         }
-                        timeout(time: 1, unit: 'MINUTES') {
+                        timeout(time: 30, unit: 'SECONDS') {
                             echo 'Starting Wiremock service in background...'
                             bat 'icacls C:\\ProgramData\\Jenkins\\wiremock-standalone-3.10.0.jar'
                             bat 'start /B java -Dfile.encoding=UTF-8 -jar C:\\ProgramData\\Jenkins\\wiremock-standalone-3.10.0.jar --port 9090 --root-dir %WORKSPACE%\\test\\wiremock'
