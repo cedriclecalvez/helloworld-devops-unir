@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
+                git branch: 'dev', url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
             }
         }
         stage('Build') {
