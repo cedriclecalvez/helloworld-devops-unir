@@ -11,7 +11,7 @@ pipeline {
         }
         stage('Setup Virtual Environment') {
             steps {
-                bat 'python -m venv ${VIRTUAL_ENV}'
+                bat 'python -m venv %VIRTUAL_ENV%'
             }
         }
         // stage('Install Dependencies') {
