@@ -60,7 +60,7 @@ pipeline {
             archiveArtifacts artifacts: '**/result-*.xml', fingerprint: true
             archiveArtifacts artifacts: '**/flake8.out', fingerprint: true
             archiveArtifacts artifacts: '**/bandit-report.xml', fingerprint: true
-}
+
 
             echo 'Cleaning done and artifacts archived.'
         }
