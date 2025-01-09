@@ -19,16 +19,14 @@ pipeline {
                 bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest'
             }
         }
-        stage('Tests'){
-            stage('Run Unit Tests') {
-                steps {
-                    catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
-                        bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m pytest --junitxml=result-unit.xml test\\unit'
-                        junit 'result-unit.xml'
-                    }
+        stage('Run Unit Tests') {
+            steps {
+                catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
+                    bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m pytest --junitxml=result-unit.xml test\\unit'
+                    junit 'result-unit.xml'
                 }
-            } 
-        }
+            }
+        } 
     }
     post {
         always {
