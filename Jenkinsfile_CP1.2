@@ -1,24 +1,14 @@
 pipeline {
     agent any
-    environment {
-        VIRTUAL_ENV = '.venv'
-    }
+   
     stages {
         stage('Clone Repo') {
             steps {
                 git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
             }
         }
-        stage('Setup Virtual Environment') {
-            steps {
-                bat 'python -m venv %VIRTUAL_ENV%'
-            }
-        }
-        // stage('Install Dependencies') {
-        //     steps {
-        //         bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest coverage flake8'
-        //     }
-        // }
+      
+      
         stage('Run Tests') {
             parallel{
                 stage('Unit Tests') {
@@ -33,7 +23,7 @@ pipeline {
                     steps {
                         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
                             bat '''
-                            call %VIRTUAL_ENV%\\Scripts\\activate.bat   && %VIRTUAL_ENV%\\Scripts\\python -m coverage run --branch --source=app --omit=app\\__init__.py,app\\api.py -m pytest test\\unit   && coverage xml
+                            wsl python3 -m coverage run --branch --source=app --omit=app\\__init__.py,app\\api.py -m pytest test\\unit   && coverage xml
                            
                             '''
                             cobertura coberturaReportFile:'**\\coverage.xml', conditionalCoverageTargets:'100,0,80',lineCoverageTargets:'100,0,90'
@@ -43,8 +33,9 @@ pipeline {
                 stage('Tests Static') {
                     steps {
                         
-                            bat '''call %VIRTUAL_ENV%\\Scripts\\activate.bat
-                            python -m flake8 --exit-zero --format=pylint app >flake8.out'''
+                            bat '''
+                            wsl python3 -m flake8 --exit-zero --format=pylint app >flake8.out
+                            '''
                             recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], qualityGates: [[threshold: 10, type: 'TOTAL', unstable: true], [threshold: 11, type: 'TOTAL', unstable: false]]
                         
                     }
