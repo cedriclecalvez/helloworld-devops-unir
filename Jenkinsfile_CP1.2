@@ -16,7 +16,7 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest'
+                bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest coverage'
             }
         }
         stage('Run Unit Tests') {
@@ -24,6 +24,14 @@ pipeline {
                 catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
                     bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m pytest --junitxml=result-unit.xml test\\unit'
                     junit 'result-unit.xml'
+                }
+            }
+        } 
+        stage('Coverage Tests') {
+            steps {
+                catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
+                    bat 'coverage run --branch --source=app --omit=app\\__init__.py,app\\api.py -m pytest test\\unit coverage xml'
+                    cobertura coberturaReportFile:'coverage.xml', conditionalCoverageTargets:'100,0,85',lineCoverageTargets:'100,0,90'
                 }
             }
         } 
