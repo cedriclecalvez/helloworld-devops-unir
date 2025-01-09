@@ -9,11 +9,11 @@ pipeline {
                 git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
             }
         }
-        // stage('Setup Virtual Environment') {
-        //     steps {
-        //         bat 'python -m venv ${VIRTUAL_ENV}'
-        //     }
-        // }
+        stage('Setup Virtual Environment') {
+            steps {
+                bat 'python -m venv ${VIRTUAL_ENV}'
+            }
+        }
         // stage('Install Dependencies') {
         //     steps {
         //         bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest coverage flake8'
