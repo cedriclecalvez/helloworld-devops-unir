@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
+                git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
             }
         }
         stage('Setup Virtual Environment') {
