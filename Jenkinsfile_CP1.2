@@ -4,6 +4,9 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
+                script {
+                    logEnvironment()
+                }
                 git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
             }
         }
@@ -30,14 +33,20 @@ pipeline {
                         }
                     }
                 } 
-                stage('Tests Static') {
+                stage('Static Analysis') {
                     steps {
-                        
-                            bat '''
-                            python -m flake8 --exit-zero --format=pylint app >flake8.out
-                            '''
-                            recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], qualityGates: [[threshold: 10, type: 'TOTAL', unstable: true], [threshold: 11, type: 'TOTAL', unstable: false]]
-                        
+                        bat '''
+                        python -m flake8 --exit-zero --format=pylint app >flake8.out
+                        '''
+                        recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], qualityGates: [[threshold: 10, type: 'TOTAL', unstable: true], [threshold: 11, type: 'TOTAL', unstable: false]]
+                    }
+                } 
+                stage('Security Analysis') {
+                    steps {
+                        bat '''
+                        bandit -r app -f xml -o bandit-report.xml
+                        '''
+                        recordIssues tools: [bandit(name: 'Bandit', pattern: 'bandit-report.xml')], qualityGates: [[threshold: 1, type: 'TOTAL', unstable: true]]
                     }
                 } 
             }
@@ -46,7 +55,7 @@ pipeline {
     }
     post {
         always {
-            archiveArtifacts artifacts: '**/result-*.xml', fingerprint: true
+            archiveArtifacts artifacts: '**/result-*.xml', **/flake8.out', **/bandit-report.xml, fingerprint: true
             cleanWs()
             echo 'Cleaning done and artifacts archived.'
         }
@@ -57,4 +66,10 @@ pipeline {
             echo 'Pipeline failed.'
         }
     }
+}
+def logEnvironment() {
+    bat 'whoami'
+    bat 'hostname'
+    bat 'echo %WORKSPACE%'
+    bat 'dir'
 }
