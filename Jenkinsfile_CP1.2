@@ -55,7 +55,7 @@ pipeline {
     }
     post {
         always {
-            archiveArtifacts artifacts: '**/result-*.xml **/flake8.out **/bandit-report.xml', fingerprint: true
+            archiveArtifacts artifacts: '**/*.xml **/*.out', fingerprint: true
             cleanWs()
             echo 'Cleaning done and artifacts archived.'
         }
