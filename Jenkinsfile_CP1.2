@@ -56,13 +56,16 @@ pipeline {
     post {
         always {
             archiveArtifacts artifacts: '**/*.xml **/*.out', fingerprint: true
-            cleanWs()
             echo 'Cleaning done and artifacts archived.'
         }
         success {
+            cleanWs()
+
             echo 'Pipeline completed successfully!'
         }
         failure {
+            cleanWs()
+
             echo 'Pipeline failed.'
         }
     }
