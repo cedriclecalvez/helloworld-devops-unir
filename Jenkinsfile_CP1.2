@@ -43,8 +43,9 @@ pipeline {
                 } 
                 stage('Security Analysis') {
                     steps {
+                        // python -m bandit --exit-zero -r app -f custom -o bandit.out --msg-template "{abspath}:{line}: [{test:id}] {msg}"
                         bat '''
-                        python -m bandit --exit-zero -r app -f custom -o bandit.out --msg-template "{abspath}:{line}: [{test:id}] {msg}"
+                        python -m bandit --exit-zero -r app -f custom -o bandit.out --msg-template "{filename}:{line}: [{test_id}] {severity}: {msg}
                         '''
                         recordIssues tools: [pylint(name: 'Bandit', pattern: 'bandit.out')], qualityGates: [[threshold: 4, type: 'TOTAL', unstable: true],[threshold: 8, type: 'TOTAL', unstable: false]]
                     }
