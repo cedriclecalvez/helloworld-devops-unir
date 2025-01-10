@@ -44,7 +44,7 @@ pipeline {
                 stage('Security Analysis') {
                     steps {
                         bat '''
-                        python -m bandit --exit-zero -r app -f txt -o bandit.out --msg-template "{abspath}:{line}:[{test:id}] {msg}"
+                        python -m bandit --exit-zero -r app -f custom -o bandit.out --msg-template "{abspath}:{line}:[{test:id}] {msg}"
                         '''
                         recordIssues tools: [pylint(name: 'Bandit', pattern: 'bandit.out')], qualityGates: [[threshold: 4, type: 'TOTAL', unstable: true],[threshold: 8, type: 'TOTAL', unstable: false]]
                     }
@@ -57,6 +57,8 @@ pipeline {
         always {
             archiveArtifacts artifacts: '**/*.xml, **/*.out', fingerprint: true
             echo 'Artifacts archived.'
+            // perfReport filterRegex: '', relativeFailedThresholdNegative: 1.2, relativeFailedThresholdPositive: 1.89, relativeUnstableThresholdNegative: 1.8, relativeUnstableThresholdPositive: 1.5, sourceDataFiles: 'results.csv'
+            // performanceReport parsers: [[$class: 'JMeterParser', glob: 'result.xml']], relativeFailedThresholdNegative: 1.2, relativeFailedThresholdPositive: 1.89, relativeUnstableThresholdNegative: 1.8, relativeUnstableThresholdPositive: 1.5
         }
         success {
             cleanWs()
