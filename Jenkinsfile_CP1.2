@@ -44,7 +44,7 @@ pipeline {
                 stage('Security Analysis') {
                     steps {
                         bat '''
-                        bandit -r app -f xml -o bandit-report.xml
+                        python -m bandit -r app -f xml -o bandit-report.xml --exit-zero
                         '''
                         recordIssues tools: [bandit(name: 'Bandit', pattern: 'bandit-report.xml')], qualityGates: [[threshold: 1, type: 'TOTAL', unstable: true]]
                     }
