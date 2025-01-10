@@ -43,7 +43,6 @@ pipeline {
                 } 
                 stage('Security Analysis') {
                     steps {
-                        // python -m bandit --exit-zero -r . -f custom -o bandit.out --msg-template "{relpath}:{line}: [{test_id}] {severity}: {msg}
                         bat '''
                         python -m bandit --exit-zero -r . -f custom -o bandit.out --msg-template "{relpath}:{line}: [{test_id}] {msg}"
                         '''
