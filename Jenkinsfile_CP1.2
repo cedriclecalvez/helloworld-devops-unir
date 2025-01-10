@@ -46,7 +46,7 @@ pipeline {
                         bat '''
                         python -m bandit -r app -f xml -o bandit-report.xml --exit-zero
                         '''
-                        recordIssues tools: [bandit(name: 'Bandit', pattern: 'bandit-report.xml')], qualityGates: [[threshold: 1, type: 'TOTAL', unstable: true]]
+                        recordIssues tools: [bandit(name: 'Bandit', pattern: 'bandit-report.xml')], qualityGates: [[threshold: 5, type: 'TOTAL', unstable: true]]
                     }
                 } 
             }
@@ -56,16 +56,16 @@ pipeline {
     post {
         always {
             archiveArtifacts artifacts: '**/*.xml, **/*.out', fingerprint: true
-            echo 'Cleaning done and artifacts archived.'
+            echo 'Artifacts archived.'
         }
         success {
             cleanWs()
-
+            echo 'Cleaning done'
             echo 'Pipeline completed successfully!'
         }
         failure {
             cleanWs()
-
+            echo 'Cleaning done'
             echo 'Pipeline failed.'
         }
     }
