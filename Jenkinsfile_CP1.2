@@ -46,7 +46,7 @@ pipeline {
                         bat '''
                         python -m bandit --exit-zero -r . -f -o bandit.out --msg-template "{abspath}:{line}:[{test:id}] {msg}"
                         '''
-                        recordIssues tools: [bandit(name: 'Bandit', pattern: 'bandit.out')], qualityGates: [[threshold: 5, type: 'TOTAL', unstable: true]]
+                        recordIssues tools: [pylint(name: 'Bandit', pattern: 'bandit.out')], qualityGates: [[threshold: 4, type: 'TOTAL', unstable: true],[threshold: 8, type: 'TOTAL', unstable: false]]
                     }
                 } 
             }
