@@ -29,7 +29,8 @@ pipeline {
                             python -m coverage run --branch --source=app --omit=app\\__init__.py,app\\api.py -m pytest test\\unit
                             coverage xml                           
                             '''
-                            cobertura coberturaReportFile:'**\\coverage.xml', conditionalCoverageTargets:'90,80,0',lineCoverageTargets:'95,85,0'
+                            cobertura coberturaReportFile:'**\\coverage.xml', conditionalCoverageTargets:'100,0,80',lineCoverageTargets:'100,0,90'
+                            // cobertura coberturaReportFile:'**\\coverage.xml', conditionalCoverageTargets:'90,80,0',lineCoverageTargets:'95,85,0'
                         }
                     }
                 } 
