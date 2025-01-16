@@ -28,21 +28,14 @@ pipeline {
                     steps {
                         timeout(time: 30, unit: 'SECONDS') {
                             echo 'Starting Flask service in WSL background...'
-                            script {
-                            // bat '''
-                            //     C:\\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld &&
-                            //     export FLASK_APP=app/api.py &&
-                            //     export PYTHONPATH=. &&
-                            //     flask run
-                            // '''
+                           
+                            bat '''
+                                C:\\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld &&
+                                export FLASK_APP=app.api &&
+                                export PYTHONPATH=. &&
+                                flask run
+                            '''
                             
-                        // Commande correcte avec chemin complet et utilisation de guillemets
-                        bat '''
-                
-
-                 wsl -u root -d Ubuntu-20.04 -- bash -c "cd /root/dev/unir_universidad/helloworld && export FLASK_APP=app.api && export PYTHONPATH=. && flask run --host=0.0.0.0 &"
-            '''
-                            }
                         }
                     }
                 }
