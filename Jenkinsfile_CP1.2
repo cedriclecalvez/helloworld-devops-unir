@@ -86,14 +86,13 @@ pipeline {
                         //     ping -n 10 127.0.0.1
                         //     cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin" && .\\jmeter -n -t "test\\jmeter\\flask.jmx" -f -l "flask.jtl"
                         // '''
-                        // }
-                        
+
                         bat '''
-                            C:\\Program Files\\apache-jmeter-5.6.3\\bin jmeter -n -t "test\\jmeter\\flask.jmx -f -l flask.jtl
+                            C:\\ProgramData\\apache-jmeter-5.6.3\\bin jmeter -n -t "test\\jmeter\\flask.jmx -f -l flask.jtl
                         '''
-                      
+                        }
                        perfReport sourceDataFiles: 'flask.jtl'
-                    }}
+                    }
                 } 
             }
         }
