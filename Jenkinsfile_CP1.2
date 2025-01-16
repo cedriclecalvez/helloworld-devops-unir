@@ -45,7 +45,7 @@ pipeline {
                             // '''
 
                             bat'''
-                            cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld && set FLASK_APP=app.api && set PYTHONPATH=. && python -m flask run --host=0.0.0.0"
+                            cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld && set FLASK_APP=app.api && set PYTHONPATH=. && source .venv\\Scripts\\activate && python -m flask run --host=0.0.0.0"
                             '''
 
                         }
