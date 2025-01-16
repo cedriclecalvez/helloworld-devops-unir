@@ -1,6 +1,8 @@
 pipeline {
     agent any
-   
+    environment {
+        VIRTUAL_ENV = '.venv'
+    }
     stages {
         stage('Clone Repo') {
             steps {
@@ -14,6 +16,32 @@ pipeline {
       
         stage('Run Tests') {
             parallel{
+                //  stage('Start Flask API') {
+                //     steps {
+                //         timeout(time: 30, unit: 'SECONDS') {
+                //             echo 'Starting Flask service in background...'
+                //             bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m flask run'
+                //         }
+                //     }
+                // }
+                stage('Start Flask API') {
+                    steps {
+                        timeout(time: 30, unit: 'SECONDS') {
+                            echo 'Starting Flask service in WSL background...'
+                            script {
+                                // Chemin vers le répertoire où se trouve votre projet Flask
+                                def projectDir = "/root/dev/unir_universidad/helloworld"
+
+                                // Commande Flask avec changement de répertoire
+                                def flaskCommand = "cd ${projectDir} && export FLASK_APP=app/api.py export PYTHONPATH=. flask run --host=0.0.0.0"
+
+                                // Exécuter la commande dans WSL
+                                bat "wsl -d Ubuntu -- bash -c '${flaskCommand}' &"
+                                // bat 'python -m pytest --junitxml=result-unit.xml test\\unit'
+                            }
+                        }
+                    }
+                }
                 stage('Unit Tests') {
                     steps {
                         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
@@ -47,6 +75,14 @@ pipeline {
                         bandit --exit-zero -r . -f custom -o bandit.out --msg-template "{abspath}:{line}: [{test_id}]: {msg}"
                         '''
                         recordIssues tools: [pyLint(name: 'Bandit', pattern: 'bandit.out')],qualityGates: [[threshold: 2, type: 'TOTAL', unstable: true], [threshold: 4, type: 'TOTAL', unstable: false]]
+                    }
+                } 
+                stage('Performance Tests') {
+                    steps {
+                        bat '''
+                        C:\\Program Files\\apache-jmeter-5.6.3\\bin\\jmeter -n -t test\\jmeter\\flask.jmx –f –l flask.jtl
+                        '''
+                       perfReport sourceDataFiles: 'flask.jtl'
                     }
                 } 
             }
