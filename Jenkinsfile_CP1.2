@@ -29,15 +29,13 @@ pipeline {
                         timeout(time: 30, unit: 'SECONDS') {
                             echo 'Starting Flask service in WSL background...'
                             script {
-                                // Chemin vers le répertoire où se trouve votre projet Flask
-                                def projectDir = "/root/dev/unir_universidad/helloworld"
-
-                                // Commande Flask avec changement de répertoire
-                                def flaskCommand = "cd ${projectDir} && export FLASK_APP=app/api.py export PYTHONPATH=. flask run --host=0.0.0.0"
-
-                                // Exécuter la commande dans WSL
-                                bat "wsl -d Ubuntu -- bash -c '${flaskCommand}' &"
-                                // bat 'python -m pytest --junitxml=result-unit.xml test\\unit'
+                            bat '''
+                                wsl -d Ubuntu -- bash -c "
+                                cd /root/dev/unir_universidad/helloworld &&
+                                export FLASK_APP=app/api.py &&
+                                export PYTHONPATH=. &&
+                                flask run --host=0.0.0.0 &"
+                            '''
                             }
                         }
                     }
