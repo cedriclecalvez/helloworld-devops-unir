@@ -99,9 +99,7 @@ pipeline {
                         //     bash -c "source .venv/bin/activate && export FLASK_APP=app.api && export PYTHONPATH=. && flask run --host=0.0.0.0"
                         // '''
                         
-                        bat '''
-                       wsl.exe -d Ubuntu-20.04 bash -c "cd /root/dev/unir_universidad/helloworld && source .venv/bin/activate && export FLASK_APP=app.api && export PYTHONPATH=. && flask run --host=0.0.0.0 &"
-                        '''
+                       
 
                        
                         bat '''
