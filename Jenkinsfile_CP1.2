@@ -94,7 +94,7 @@ pipeline {
                             call .venv\\Scripts\\activate.bat
                             set FLASK_APP=app\\api.py
                             set PYTHONPATH=.
-                            flask run --host=0.0.0.0
+                            start python -m flask run --host=0.0.0.0
                             
                         '''
 
