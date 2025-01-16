@@ -87,13 +87,20 @@ pipeline {
                 } 
                 stage('Performance Tests') {
                     steps {
+                        script{
+                             logEnvironment()
                         bat '''
                             cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
                             set FLASK_APP=app.api
                             set PYTHONPATH=.
                            
+                           
                             
                         '''
+                         logEnvironment()
+
+                        }
+                        
                         // bat '''
                         //     cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
                         //     bash -c "source .venv/bin/activate && export FLASK_APP=app.api && export PYTHONPATH=. && flask run --host=0.0.0.0"
