@@ -98,7 +98,7 @@ pipeline {
                         //     cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
                         //     bash -c "source .venv/bin/activate && export FLASK_APP=app.api && export PYTHONPATH=. && flask run --host=0.0.0.0"
                         // '''
-                        sh '''
+                        bat '''
                         cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
                         set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call .venv\\Scripts\\activate.bat && \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld\\.venv\\Scripts\\python -m flask run
                         '''
