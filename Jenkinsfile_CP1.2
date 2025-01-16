@@ -37,10 +37,12 @@ pipeline {
                             // '''
                             
                         // Commande correcte avec chemin complet et utilisation de guillemets
-                            bat '''
-                            export FLASK_APP=\\wsl$/Ubuntu-20.04/root/dev/unir_universidad/helloworld/app/api.py
-                            export PYTHONPATH=\\wsl$/Ubuntu-20.04/root/dev/unir_universidad/helloworld
-                            flask run --host=0.0.0.0
+                         bat '''
+                            wsl -u root -d Ubuntu-20.04 bash -c "
+                                export FLASK_APP=/root/dev/unir_universidad/helloworld/app/api.py &&
+                                export PYTHONPATH=/root/dev/unir_universidad/helloworld &&
+                                flask run --host=0.0.0.0
+                            "
                         '''
                             }
                         }
