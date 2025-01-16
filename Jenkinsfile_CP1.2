@@ -91,16 +91,11 @@ pipeline {
                             cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
                             set FLASK_APP=app.api
                             set PYTHONPATH=.
-                            '''
-                            bat '''
-                                cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
-                                .\\.venv\\Scripts\\activate
-                                python -m flask run --host=0.0.0.0
-                            '''
+                            .\\.venv\\Scripts\\activate
+                            python -m flask run --host=0.0.0.0
+                        '''
                         bat '''
-                        
-                        // cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin" && .\\jmeter -n -t "test\\jmeter\\flask.jmx" -f -l "flask.jtl"
-
+                            cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin" && .\\jmeter -n -t "test\\jmeter\\flask.jmx" -f -l "flask.jtl"
                         '''
                        perfReport sourceDataFiles: 'flask.jtl'
                     }
