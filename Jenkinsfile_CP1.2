@@ -40,7 +40,7 @@ pipeline {
                         bat '''
                 set FLASK_APP=/wsl$/Ubuntu-20.04/root/dev/unir_universidad/helloworld/app/api.py
                 set PYTHONPATH=/wsl$/Ubuntu-20.04/root/dev/unir_universidad/helloworld
-                wsl flask run --host=0.0.0.0
+                 wsl -u root flask run --host=0.0.0.0
             '''
                             }
                         }
