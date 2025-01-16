@@ -91,12 +91,12 @@ pipeline {
                              logEnvironment()
                         bat '''
                             cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
+                            call .venv\\Scripts\\activate.bat
                             set FLASK_APP=app.api
                             set PYTHONPATH=.
-                           flask run
+                            flask run --host=0.0.0.0
                             
                         '''
-                         logEnvironment()
 
                         }
                         
