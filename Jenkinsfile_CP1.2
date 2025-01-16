@@ -29,10 +29,20 @@ pipeline {
                         timeout(time: 30, unit: 'SECONDS') {
                             echo 'Starting Flask service in WSL background...'
                            script {
+                            // bat '''
+                            //      wsl -d Ubuntu-20.04 bash -c "cd /root/dev/unir_universidad/helloworld && export FLASK_APP=app.api && export PYTHONPATH=. && /root/dev/unir_universidad/helloworld/.venv/bin/flask run --host=0.0.0.0"
+                            // '''
                             bat '''
-                                 wsl -d Ubuntu-20.04 bash -c "cd /root/dev/unir_universidad/helloworld && export FLASK_APP=app.api && export PYTHONPATH=. && /root/dev/unir_universidad/helloworld/.venv/bin/flask run --host=0.0.0.0"
-                            '''
-                            
+    set FLASK_APP=\\\\wsl$\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld\\app\\api.py
+    set PYTHONPATH=\\\\wsl$\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
+'''
+bat '''
+    cd \\\\wsl$\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
+    .venv\\Scripts\\activate
+    python -m flask run --host=0.0.0.0
+'''
+
+
                         }
                         }
                     }
