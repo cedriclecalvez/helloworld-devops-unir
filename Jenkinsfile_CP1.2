@@ -92,7 +92,7 @@ pipeline {
                         bat '''
                             cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
                             
-                            set FLASK_APP=app\\api.py
+                            set FLASK_APP=app.api
                             set PYTHONPATH=.
                             start .venv\\Scripts\\python -m flask run --host=0.0.0.0
                             
