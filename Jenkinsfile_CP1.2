@@ -37,7 +37,7 @@ pipeline {
     set PYTHONPATH=\\\\wsl$\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
 '''
 bat '''
-    cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
+    wsl -d Ubuntu-20.04 bash -c "cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld"
     source .venv\\Scripts\\activate
     python -m flask run --host=0.0.0.0
 '''
