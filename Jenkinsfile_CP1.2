@@ -33,11 +33,11 @@ pipeline {
                             //      wsl -d Ubuntu-20.04 bash -c "cd /root/dev/unir_universidad/helloworld && export FLASK_APP=app.api && export PYTHONPATH=. && /root/dev/unir_universidad/helloworld/.venv/bin/flask run --host=0.0.0.0"
                             // '''
                             bat '''
-    set FLASK_APP=\\\\wsl$\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld\\app\\api.py
-    set PYTHONPATH=\\\\wsl$\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
+    export FLASK_APP=\\\\wsl$\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld\\app\\api.py
+    export PYTHONPATH=\\\\wsl$\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
 '''
 bat '''
-    wsl -d Ubuntu-20.04 bash -c "cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld"
+    cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
     source .venv\\Scripts\\activate
     python -m flask run --host=0.0.0.0
 '''
