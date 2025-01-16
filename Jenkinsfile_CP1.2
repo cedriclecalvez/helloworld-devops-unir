@@ -100,8 +100,8 @@ pipeline {
                         // '''
                         
                         bat '''
-                        set VENV_PATH=C:\\path\\to\\your\\venv
-                        set FLASK_APP=app\\api.py
+                        set VENV_PATH=C:\\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
+                        set FLASK_APP=app.api
                         set PYTHONPATH=.
                         call %VENV_PATH%\\Scripts\\activate.bat
                         %VENV_PATH%\\Scripts\\python -m flask run --host=0.0.0.0
