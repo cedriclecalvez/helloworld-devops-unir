@@ -30,10 +30,7 @@ pipeline {
                             echo 'Starting Flask service in WSL background...'
                            
                             bat '''
-                                C:\\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld &&
-                                export FLASK_APP=app.api &&
-                                export PYTHONPATH=. &&
-                                flask run
+                                 wsl -d Ubuntu-20.04 bash -c "cd /root/dev/unir_universidad/helloworld && export FLASK_APP=app.api && export PYTHONPATH=. && /root/dev/unir_universidad/helloworld/.venv/bin/flask run --host=0.0.0.0"
                             '''
                             
                         }
