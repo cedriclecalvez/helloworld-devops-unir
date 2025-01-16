@@ -38,7 +38,7 @@ pipeline {
 '''
 bat '''
     cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
-    .venv\\Scripts\\activate
+    source .venv\\Scripts\\activate
     python -m flask run --host=0.0.0.0
 '''
 
