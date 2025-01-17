@@ -15,7 +15,7 @@ pipeline {
             parallel{
                  stage('Start Flask API') {
                     steps {
-                            // timeout(time: 60, unit: 'SECONDS') {
+                            timeout(time: 60, unit: 'SECONDS') {
                             echo 'Starting Flask service in background...'
                                 bat '''
                                     call .venv\\Scripts\\activate
@@ -23,7 +23,7 @@ pipeline {
                                     set PYTHONPATH=.
                                     start /B python -m flask run --host=0.0.0.0 --port=5000
                                 '''
-                            // }
+                            }
                     }
                 }
                 stage('Unit Tests') {
