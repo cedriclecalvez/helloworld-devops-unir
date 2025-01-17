@@ -85,14 +85,18 @@ pipeline {
                 stage('Performance Tests') {
                     steps {
                         script{
-                            logEnvironment()
-                           
-                            echo 'Starting JMeter...'
-                                bat '''
-                                    cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
-                                    jmeter -n -t "%WORKSPACE%\\test\\jmeter\\flask.jmx" -f -l "%WORKSPACE%\\flask.jtl"
-                                '''
-                            echo 'JMeter execution finished.'
+                            
+                            catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
+                                
+                                logEnvironment()
+                                echo 'Starting JMeter...'
+                                    bat '''
+                                        cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
+                                        jmeter -n -t "%WORKSPACE%\\test\\jmeter\\flask.jmx" -f -l "%WORKSPACE%\\flask.jtl"
+                                    '''
+                                echo 'JMeter execution finished.'
+                            }
+                        
                         }
                        perfReport sourceDataFiles: 'flask.jtl'
                     }
@@ -101,9 +105,7 @@ pipeline {
             post {
                 always {
                     echo 'Stopping Flask service...'
-                    bat '''
-                        taskkill /F /IM python.exe
-                    '''
+                    bat 'taskkill /F /IM python.exe /T'
                     echo 'Flask service stopped.'
                 }
             }
