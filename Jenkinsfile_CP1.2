@@ -43,10 +43,7 @@ pipeline {
                             bat '''
                                 set FLASK_APP=app\\api.py
                                 set PYTHONPATH=.
-                                python -m venv venv
-                                call .venv\\Scripts\\activate.bat
                                 start /B .venv\\Scripts\\python -m flask run --port=5000
-
                             '''
                         }
                         }
@@ -92,9 +89,6 @@ pipeline {
                 stage('Performance Tests') {
                     steps {
                         script{
-                            
-                            catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
-                                
                                 logEnvironment()
                                 echo 'Starting JMeter...'
                                     bat '''
@@ -102,8 +96,6 @@ pipeline {
                                         jmeter -n -t "%WORKSPACE%\\test\\jmeter\\flask.jmx" -f -l "%WORKSPACE%\\flask.jtl"
                                     '''
                                 echo 'JMeter execution finished.'
-                            }
-                        
                         }
                        perfReport sourceDataFiles: 'flask.jtl'
                     }
