@@ -16,23 +16,22 @@ pipeline {
       
         stage('Run Tests') {
             parallel{
-                 stage('Start Flask API') {
-                    steps {
-                        // timeout(time: 60, unit: 'SECONDS') {
-                            echo 'Starting Flask service in background...'
-                               bat '''
-                                    set FLASK_APP=app.api
-                                    set PYTHONPATH=.
-                                    start /B .venv\\Scripts\\python -m flask run
-                                    timeout /t 10 > nul
-                                '''
-                                    // ping -n 10 127.0.0.1
-                                    // timeout /t 10 > nul
-                        // }
-                        echo 'Flask service finished.'
+                //  stage('Start Flask API') {
+                //     steps {
+                //         // timeout(time: 60, unit: 'SECONDS') {
+                //             echo 'Starting Flask service in background...'
+                //                bat '''
+                //                     set FLASK_APP=app.api
+                //                     set PYTHONPATH=.
+                //                     start /B .venv\\Scripts\\python -m flask run
+                //                 '''
+                //                     // ping -n 10 127.0.0.1
+                //                     // timeout /t 10 > nul
+                //         // }
+                //         echo 'Flask service finished.'
 
-                    }
-                }
+                //     }
+                // }
             
                 stage('Unit Tests') {
                     steps {
@@ -73,14 +72,13 @@ pipeline {
                     steps {
                         script{
                             logEnvironment()
-                            // echo 'Starting Flask service in background...'
-                            //    bat '''
-                            //         set FLASK_APP=app.api
-                            //         set PYTHONPATH=.
-                            //         start /B .venv\\Scripts\\python -m flask run
-                            //         ping -n 10 127.0.0.1
+                            echo 'Starting Flask service in background...'
+                               bat '''
+                                    set FLASK_APP=app.api
+                                    set PYTHONPATH=.
+                                    start .venv\\Scripts\\python -m flask run
 
-                            //     '''
+                                '''
                             
                             
                             echo 'Starting JMeter...'
