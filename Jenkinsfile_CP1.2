@@ -76,7 +76,7 @@ pipeline {
                                bat '''
                                     set FLASK_APP=app.api
                                     set PYTHONPATH=.
-                                    start .venv\\Scripts\\python -m flask run
+                                    start /B .venv\\Scripts\\python -m flask run
 
                                 '''
                             
