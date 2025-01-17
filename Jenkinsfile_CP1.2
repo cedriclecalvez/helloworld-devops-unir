@@ -43,7 +43,7 @@ pipeline {
                             bat '''
                                 set FLASK_APP=app\\api.py
                                 set PYTHONPATH=.
-                                start /B .venv\\Scripts\\python -m flask run --port=5000
+                                start /B .venv\\Scripts\\python -m flask run --host=0.0.0.0 --port=5000
                             '''
                         }
                         }
