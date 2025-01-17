@@ -18,17 +18,19 @@ pipeline {
             parallel{
                  stage('Start Flask API') {
                     steps {
-                        // timeout(time: 60, unit: 'SECONDS') {
-                            echo 'Starting Flask service in background...'
-                               bat '''
-                                    set FLASK_APP=app.api
-                                    set PYTHONPATH=.
-                                    start /B .venv\\Scripts\\python -m flask run
-                                '''
-                                    // ping -n 10 127.0.0.1
-                                    // timeout /t 10 > nul
-                        // }
-                        echo 'Flask service finished.'
+                        catchError(buildResult:'SUCCESS',stageResult:'ABORTED'){
+                            timeout(time: 60, unit: 'SECONDS') {
+                                echo 'Starting Flask service in background...'
+                                bat '''
+                                        set FLASK_APP=app.api
+                                        set PYTHONPATH=.
+                                        start /B .venv\\Scripts\\python -m flask run
+                                    '''
+                                        // ping -n 10 127.0.0.1
+                                        // timeout /t 10 > nul
+                            }
+                            echo 'Flask service finished.'
+                        }
 
                     }
                 }
