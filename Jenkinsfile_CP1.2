@@ -23,26 +23,13 @@ pipeline {
                                bat '''
                                     set FLASK_APP=app.api
                                     set PYTHONPATH=.
-                                    start /B .venv\\Scripts\\python -m flask run
+                                    .venv\\Scripts\\python -m flask run
                                 '''
                                     // timeout /t 10 > nul
                         }
                     }
                 }
-                // stage('Start Flask API') {
-                //     steps {
-                //         timeout(time: 30, unit: 'SECONDS') {
-                //             echo 'Starting Flask service in WSL background...'
-                //             bat '''
-                //                 cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
-                //                 set FLASK_APP=app.api
-                //                 set PYTHONPATH=.
-                //                 start /B .venv\\Scripts\\python -m flask run 
-                //                 ping -n 10 127.0.0.1
-                //             '''
-                //         }
-                //     }
-                // }
+            
                 stage('Unit Tests') {
                     steps {
                         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
@@ -82,25 +69,7 @@ pipeline {
                     steps {
                         script{
                              logEnvironment()
-                        // bat '''
-                        //     cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
-                            
-                        //     set FLASK_APP=app.api
-                        //     set PYTHONPATH=.
-                        //     start /B .venv\\Scripts\\python -m flask run --host=0.0.0.0
-                        //     ping -n 10 127.0.0.1
-                        //     cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin" && .\\jmeter -n -t "test\\jmeter\\flask.jmx" -f -l "flask.jtl"
-                        // '''
-
-                        // bat '''
-                        //     cd \\wsl.localhost\\Ubuntu-20.04\\root\\dev\\unir_universidad\\helloworld
-                        //     set FLASK_APP=app.api
-                        //     set PYTHONPATH=.
-                        //     start /B .venv\\Scripts\\python -m flask run 
-                        //     ping -n 10 127.0.0.1
-                        //     cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
-                        // '''
-
+                     
 
                         // bat '''
                         //     set FLASK_APP=app.api
