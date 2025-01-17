@@ -15,6 +15,7 @@ pipeline {
             parallel{
                  stage('Start Flask API') {
                     steps {
+                        catchError(buildResult:'SUCCESS',stageResult:'ABORTED'){
                             timeout(time: 60, unit: 'SECONDS') {
                             echo 'Starting Flask service in background...'
                                 bat '''
@@ -24,6 +25,7 @@ pipeline {
                                     start /B python -m flask run --host=0.0.0.0 --port=5000
                                 '''
                             }
+                        }
                     }
                 }
                 stage('Unit Tests') {
