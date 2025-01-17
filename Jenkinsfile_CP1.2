@@ -18,7 +18,7 @@ pipeline {
             parallel{
                  stage('Start Flask API') {
                     steps {
-                        timeout(time: 60, unit: 'SECONDS') {
+                        // timeout(time: 60, unit: 'SECONDS') {
                             echo 'Starting Flask service in background...'
                                bat '''
                                     set FLASK_APP=app.api
@@ -28,7 +28,7 @@ pipeline {
 
                                 '''
                                     // timeout /t 10 > nul
-                        }
+                        // }
                         echo 'Flask service finished.'
 
                     }
