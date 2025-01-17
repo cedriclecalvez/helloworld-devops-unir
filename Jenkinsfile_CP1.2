@@ -24,7 +24,7 @@ pipeline {
                                 bat '''
                                         set FLASK_APP=app.api
                                         set PYTHONPATH=.
-                                        start /B .venv\\Scripts\\python -m flask run
+                                        start /B .venv\\Scripts\\python -m flask run --port=5000
                                     '''
                                         // ping -n 10 127.0.0.1
                                         // timeout /t 10 > nul
@@ -99,11 +99,6 @@ pipeline {
     }
     post {
         always {
-            echo 'Stopping Flask service...'
-            bat '''
-                taskkill /F /IM python.exe
-            '''
-            echo 'Flask service stopped.'
             archiveArtifacts artifacts: '**/*.xml, **/*.out', fingerprint: true
             echo 'Artifacts archived.'
             // perfReport filterRegex: '', relativeFailedThresholdNegative: 1.2, relativeFailedThresholdPositive: 1.89, relativeUnstableThresholdNegative: 1.8, relativeUnstableThresholdPositive: 1.5, sourceDataFiles: 'results.csv'
