@@ -1,9 +1,5 @@
 pipeline {
     agent any
-    environment {
-        VIRTUAL_ENV = '.venv'
-        VIRTUAL_ACTIVATE_ENV = '.venv\\Scripts\\activate.bat'
-    }
     stages {
         stage('Clone Repo') {
             steps {
@@ -17,41 +13,21 @@ pipeline {
       
         stage('Run Tests') {
             parallel{
-                //  stage('Start Flask API') {
-                //     steps {
-                //         catchError(buildResult:'SUCCESS',stageResult:'ABORTED'){
-                //             timeout(time: 60, unit: 'SECONDS') {
-                //                 echo 'Starting Flask service in background...'
-                //                 bat '''
-                //                         set FLASK_APP=app.api
-                //                         set PYTHONPATH=.
-                //                         start /B .venv\\Scripts\\python -m flask run --port=5000
-                //                     '''
-                //                         // ping -n 10 127.0.0.1
-                //                         // timeout /t 10 > nul
-                //             }
-                //             echo 'Flask service finished.'
-                //         }
-
-                //     }
-                // }
                  stage('Start Flask API') {
                     steps {
                         catchError(buildResult:'SUCCESS',stageResult:'ABORTED'){
-                             timeout(time: 120, unit: 'SECONDS') {
+                            timeout(time: 60, unit: 'SECONDS') {
                             echo 'Starting Flask service in background...'
-                            bat '''
-                                call .venv\\Scripts\\activate
-                                set FLASK_APP=app\\api.py
-                                set PYTHONPATH=.
-                                start /B python -m flask run --host=0.0.0.0 --port=5000
-                            '''
+                                bat '''
+                                    call .venv\\Scripts\\activate
+                                    set FLASK_APP=app\\api.py
+                                    set PYTHONPATH=.
+                                    start /B python -m flask run --host=0.0.0.0 --port=5000
+                                '''
+                            }
                         }
-                        }
-
                     }
                 }
-            
                 stage('Unit Tests') {
                     steps {
                         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
@@ -64,8 +40,8 @@ pipeline {
                     steps {
                         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
                             bat '''
-                            python -m coverage run --branch --source=app --omit=app\\__init__.py,app\\api.py -m pytest test\\unit
-                            coverage xml                           
+                                python -m coverage run --branch --source=app --omit=app\\__init__.py,app\\api.py -m pytest test\\unit
+                                coverage xml                           
                             '''
                             cobertura coberturaReportFile:'**\\coverage.xml', conditionalCoverageTargets:'100,90,80',lineCoverageTargets:'100,95,85',onlyStable: false
                         }
@@ -74,7 +50,7 @@ pipeline {
                 stage('Static Analysis') {
                     steps {
                         bat '''
-                        python -m flake8 --exit-zero --format=pylint app >flake8.out
+                            python -m flake8 --exit-zero --format=pylint app >flake8.out
                         '''
                         recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], qualityGates: [[threshold: 8, type: 'TOTAL', unstable: true], [threshold: 10, type: 'TOTAL', unstable: false]]
                     }
@@ -82,7 +58,7 @@ pipeline {
                 stage('Security Analysis') {
                     steps {
                         bat '''
-                        bandit --exit-zero -r . -f custom -o bandit.out --msg-template "{abspath}:{line}: [{test_id}]: {msg}"
+                            bandit --exit-zero -r . -f custom -o bandit.out --msg-template "{abspath}:{line}: [{test_id}]: {msg}"
                         '''
                         recordIssues tools: [pyLint(name: 'Bandit', pattern: 'bandit.out')],qualityGates: [[threshold: 2, type: 'TOTAL', unstable: true], [threshold: 4, type: 'TOTAL', unstable: false]]
                     }
@@ -110,7 +86,6 @@ pipeline {
                 }
             }
         }
-        
     }
     post {
         always {
