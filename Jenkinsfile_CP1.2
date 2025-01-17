@@ -23,7 +23,7 @@ pipeline {
                                bat '''
                                     set FLASK_APP=app.api
                                     set PYTHONPATH=.
-                                    .venv\\Scripts\\python -m flask run
+                                    start .venv\\Scripts\\python -m flask run
                                 '''
                                     // timeout /t 10 > nul
                         }
