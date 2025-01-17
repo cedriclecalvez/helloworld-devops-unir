@@ -35,6 +35,17 @@ pipeline {
 
                 //     }
                 // }
+                 stage('Start Flask API') {
+                    steps {
+                        catchError(buildResult:'SUCCESS',stageResult:'ABORTED'){
+                             timeout(time: 40, unit: 'SECONDS') {
+                            echo 'Starting Flask service in background...'
+                            bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call %VIRTUAL_ACTIVATE_ENV% && .venv\\Scripts\\python -m flask run --port=5000'
+                        }
+                        }
+
+                    }
+                }
             
                 stage('Unit Tests') {
                     steps {
@@ -75,7 +86,7 @@ pipeline {
                     steps {
                         script{
                             logEnvironment()
-                           bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call %WORKSPACE%\\.venv\\Scripts\\activate.bat && %WORKSPACE%\\.venv\\Scripts\\python -m flask run'
+                           
                             echo 'Starting JMeter...'
                                 bat '''
                                     cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
