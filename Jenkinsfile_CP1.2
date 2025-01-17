@@ -101,6 +101,7 @@ pipeline {
                             set FLASK_APP=app.api
                             set PYTHONPATH=.
                             start /B .venv\\Scripts\\python -m flask run 
+                            ping -n 10 127.0.0.1
                         '''
                         bat '''
                             cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
