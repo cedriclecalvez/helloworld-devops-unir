@@ -16,21 +16,21 @@ pipeline {
       
         stage('Run Tests') {
             parallel{
-                 stage('Start Flask API') {
-                    steps {
-                        // timeout(time: 30, unit: 'SECONDS') {
-                            echo 'Starting Flask service in background...'
-                               bat '''
-                                    set FLASK_APP=app.api
-                                    set PYTHONPATH=.
-                                    start /B .venv\\Scripts\\python -m flask run
-                                    ping -n 10 127.0.0.1
+                //  stage('Start Flask API') {
+                //     steps {
+                //         // timeout(time: 30, unit: 'SECONDS') {
+                //             echo 'Starting Flask service in background...'
+                //                bat '''
+                //                     set FLASK_APP=app.api
+                //                     set PYTHONPATH=.
+                //                     start /B .venv\\Scripts\\python -m flask run
+                //                     ping -n 10 127.0.0.1
 
-                                '''
-                                    // timeout /t 10 > nul
-                        // }
-                    }
-                }
+                //                 '''
+                //                     // timeout /t 10 > nul
+                //         // }
+                //     }
+                // }
             
                 stage('Unit Tests') {
                     steps {
@@ -71,20 +71,21 @@ pipeline {
                     steps {
                         script{
                             logEnvironment()
+                            echo 'Starting Flask service in background...'
+                               bat '''
+                                    set FLASK_APP=app.api
+                                    set PYTHONPATH=.
+                                    start /B .venv\\Scripts\\python -m flask run
+                                    ping -n 10 127.0.0.1
+
+                                '''
+                            
+                            
                             echo 'Starting JMeter...'
-                     
-
-                        // bat '''
-                        //     set FLASK_APP=app.api
-                        //     set PYTHONPATH=.
-                        //     start /B .venv\\Scripts\\python -m flask run 
-                        //     ping -n 10 127.0.0.1
-                        // '''
-
-                            bat '''
-                                cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
-                                jmeter -n -t "%WORKSPACE%\\test\\jmeter\\flask.jmx" -f -l flask.jtl
-                            '''
+                                bat '''
+                                    cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
+                                    jmeter -n -t "%WORKSPACE%\\test\\jmeter\\flask.jmx" -f -l flask.jtl
+                                '''
                             echo 'JMeter execution finished.'
                         }
                        perfReport sourceDataFiles: 'flask.jtl'
