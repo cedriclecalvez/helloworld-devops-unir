@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
         VIRTUAL_ENV = '.venv'
+        VIRTUAL_ACTIVATE_ENV = '.venv\\Scripts\\activate.bat'
     }
     stages {
         stage('Clone Repo') {
@@ -77,7 +78,8 @@ pipeline {
                             bat '''
                                 set FLASK_APP=app.api
                                 set PYTHONPATH=.
-                                start /B .venv\\Scripts\\python -m flask run --port=5000
+                                start /B call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m flask run --port=5000
+                                
                             '''
                             echo 'Starting JMeter...'
                                 bat '''
