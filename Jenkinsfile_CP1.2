@@ -16,14 +16,19 @@ pipeline {
       
         stage('Run Tests') {
             parallel{
-                //  stage('Start Flask API') {
-                //     steps {
-                //         timeout(time: 30, unit: 'SECONDS') {
-                //             echo 'Starting Flask service in background...'
-                //             bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m flask run'
-                //         }
-                //     }
-                // }
+                 stage('Start Flask API') {
+                    steps {
+                        timeout(time: 30, unit: 'SECONDS') {
+                            echo 'Starting Flask service in background...'
+                               bat '''
+                                    set FLASK_APP=app.api
+                                    set PYTHONPATH=.
+                                    start /B .venv\\Scripts\\python -m flask run
+                                    timeout /t 10 > nul
+                                '''
+                        }
+                    }
+                }
                 // stage('Start Flask API') {
                 //     steps {
                 //         timeout(time: 30, unit: 'SECONDS') {
@@ -97,12 +102,12 @@ pipeline {
                         // '''
 
 
-                        bat '''
-                            set FLASK_APP=app.api
-                            set PYTHONPATH=.
-                            start /B .venv\\Scripts\\python -m flask run 
-                            ping -n 10 127.0.0.1
-                        '''
+                        // bat '''
+                        //     set FLASK_APP=app.api
+                        //     set PYTHONPATH=.
+                        //     start /B .venv\\Scripts\\python -m flask run 
+                        //     ping -n 10 127.0.0.1
+                        // '''
                         bat '''
                             cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
                             .\\jmeter -n -t "C:\\Program Files\\apache-jmeter-5.6.3\\bin\\flask.jmx" -f -l "C:\\Program Files\\apache-jmeter-5.6.3\\bin\\flask.jtl"
