@@ -83,6 +83,15 @@ pipeline {
                     }
                 } 
             }
+            post {
+                always {
+                    echo 'Stopping Flask service...'
+                    bat '''
+                        taskkill /F /IM python.exe
+                    '''
+                    echo 'Flask service stopped.'
+                }
+            }
         }
         
     }
