@@ -75,13 +75,7 @@ pipeline {
                     steps {
                         script{
                             logEnvironment()
-                            bat '''
-                                set FLASK_APP=app.api
-                                set PYTHONPATH=.
-                                start /B .venv\\Scripts\\activate.bat && .venv\\Scripts\\python -m flask run --port=5000
-                                
-                                
-                            '''
+                           bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m flask run'
                             echo 'Starting JMeter...'
                                 bat '''
                                     cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
