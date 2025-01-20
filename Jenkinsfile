@@ -89,7 +89,7 @@ pipeline {
     }
     post {
         always {
-            archiveArtifacts artifacts: '**/*.xml, **/*.out, **/*.jtl', fingerprint: true
+            archiveArtifacts artifacts: '**/*.xml, **/*.out, flask.jtl', fingerprint: true
             echo 'Artifacts archived.'
             publishPerformanceReport parsers: [[$class: 'JMeterParser', glob: '**/*.jtl']]
             // perfReport filterRegex: '', relativeFailedThresholdNegative: 1.2, relativeFailedThresholdPositive: 1.89, relativeUnstableThresholdNegative: 1.8, relativeUnstableThresholdPositive: 1.5, sourceDataFiles: 'results.csv'
