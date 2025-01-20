@@ -52,7 +52,9 @@ pipeline {
                     steps {
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             bat '''
-                                python -m pytest --junitxml=result-unit.xml --cov=app --cov-branch --cov-report=xml:coverage.xml --omit=app\\__init__.py,app\\api.py test\\unit
+                               
+                                python -m pytest --junitxml=result-unit.xml --cov=app --cov-branch --cov-report=xml:coverage.xml --cov-omit=app/__init__.py,app/api.py test/unit
+
                             '''
                             junit 'result-unit.xml'
                         }
