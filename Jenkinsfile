@@ -13,21 +13,21 @@ pipeline {
       
         stage('Run Tests') {
             parallel{
-                // stage('Start Flask API') {
-                //     steps {
-                //         catchError(buildResult:'SUCCESS',stageResult:'ABORTED'){
-                //             timeout(time: 60, unit: 'SECONDS') {
-                //             echo 'Starting Flask service in background...'
-                //                 bat '''
-                //                     call .venv\\Scripts\\activate
-                //                     set FLASK_APP=app\\api.py
-                //                     set PYTHONPATH=.
-                //                     start /B python -m flask run --host=0.0.0.0 --port=5000
-                //                 '''
-                //             }
-                //         }
-                //     }
-                // }
+                stage('Start Flask API') {
+                    steps {
+                        catchError(buildResult:'SUCCESS',stageResult:'ABORTED'){
+                            timeout(time: 60, unit: 'SECONDS') {
+                            echo 'Starting Flask service in background...'
+                                bat '''
+                                    call .venv\\Scripts\\activate
+                                    set FLASK_APP=app\\api.py
+                                    set PYTHONPATH=.
+                                    start /B python -m flask run --host=0.0.0.0 --port=5000
+                                '''
+                            }
+                        }
+                    }
+                }
                 stage('Unit Tests') {
                     steps {
                         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
@@ -40,7 +40,7 @@ pipeline {
                     steps {
                         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
                             bat '''
-                                python -m coverage run --branch --source=app --omit=app\\__init__.py,app\\api.py -m pytest test\\unit
+                                python -m coverage run --branch --source=app --omit=app\\__init__.py,app\\api.py
                                 coverage xml                           
                             '''
                             cobertura coberturaReportFile:'**\\coverage.xml', conditionalCoverageTargets:'100,90,80',lineCoverageTargets:'100,95,85',onlyStable: false
