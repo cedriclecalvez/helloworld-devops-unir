@@ -1,91 +1,114 @@
 pipeline {
     agent any
-    environment {
-        VIRTUAL_ENV = '.venv'
-    }
     stages {
         stage('Clone Repo') {
             steps {
+                script {
+                    logEnvironment()
+                }
                 git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
             }
         }
-        stage('Build') {
-            steps {
-                echo 'NO HAY QUE COMPILAR. ESTO ES PYTHON'
-                bat "dir"
-            }
-        }
-        stage('Setup Virtual Environment') {
-            steps {
-                bat 'python -m venv ${VIRTUAL_ENV}'
-            }
-        }
-        stage('Install Dependencies') {
-            steps {
-                bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install pytest Flask'
-            }
-        }
       
-
-        stage('Tests'){
+      
+        stage('Run Tests') {
             parallel{
-                stage('Start Flask API') {
+                 stage('Start Flask API') {
                     steps {
-                        timeout(time: 30, unit: 'SECONDS') {
+                        catchError(buildResult:'SUCCESS',stageResult:'ABORTED'){
+                            timeout(time: 60, unit: 'SECONDS') {
                             echo 'Starting Flask service in background...'
-                            bat 'set FLASK_APP=app\\api.py && set PYTHONPATH=. && start /B call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m flask run'
+                                bat '''
+                                    call .venv\\Scripts\\activate
+                                    set FLASK_APP=app\\api.py
+                                    set PYTHONPATH=.
+                                    start /B python -m flask run --host=0.0.0.0 --port=5000
+                                '''
+                            }
                         }
                     }
                 }
-                 stage('Start Wiremock Service') {
-                    steps {
-                        timeout(time: 30, unit: 'SECONDS') {
-                            echo 'Starting Wiremock service in background...'
-                            bat 'icacls C:\\ProgramData\\Jenkins\\wiremock-standalone-3.10.0.jar'
-                            bat 'start /B java -Dfile.encoding=UTF-8 -jar C:\\ProgramData\\Jenkins\\wiremock-standalone-3.10.0.jar --port 9090 --root-dir %WORKSPACE%\\test\\wiremock'
-                            echo 'WireMock started in background'
-                        }
-                    }
-                }
-                stage('Run Unit Tests') {
+                stage('Unit Tests') {
                     steps {
                         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
-                            bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m pytest --junitxml=result-unit.xml test\\unit'
+                            bat 'python -m pytest --junitxml=result-unit.xml test\\unit'
                             junit 'result-unit.xml'
                         }
                     }
-                }
-                stage('Run REST Tests') {
+                } 
+                stage('Tests Coverage') {
                     steps {
-                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            bat 'call ${VIRTUAL_ENV}\\Scripts\\activate.bat && ${VIRTUAL_ENV}\\Scripts\\python -m pytest --junitxml=result-rest.xml test\\rest'
-                            junit 'result-rest.xml'
+                        catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
+                            bat '''
+                                python -m coverage run --branch --source=app --omit=app\\__init__.py,app\\api.py -m pytest test\\unit
+                                coverage xml                           
+                            '''
+                            cobertura coberturaReportFile:'**\\coverage.xml', conditionalCoverageTargets:'100,90,80',lineCoverageTargets:'100,95,85',onlyStable: false
                         }
                     }
+                } 
+                stage('Static Analysis') {
+                    steps {
+                        bat '''
+                            python -m flake8 --exit-zero --format=pylint app >flake8.out
+                        '''
+                        recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], qualityGates: [[threshold: 8, type: 'TOTAL', unstable: true], [threshold: 10, type: 'TOTAL', unstable: false]]
+                    }
+                } 
+                stage('Security Analysis') {
+                    steps {
+                        bat '''
+                            bandit --exit-zero -r . -f custom -o bandit.out --msg-template "{abspath}:{line}: [{test_id}]: {msg}"
+                        '''
+                        recordIssues tools: [pyLint(name: 'Bandit', pattern: 'bandit.out')],qualityGates: [[threshold: 2, type: 'TOTAL', unstable: true], [threshold: 4, type: 'TOTAL', unstable: false]]
+                    }
+                } 
+                stage('Performance Tests') {
+                    steps {
+                        script{
+                                logEnvironment()
+                                echo 'Starting JMeter...'
+                                    bat '''
+                                        cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
+                                        jmeter -n -t "%WORKSPACE%\\test\\jmeter\\flask.jmx" -f -l "%WORKSPACE%\\flask.jtl"
+                                    '''
+                                echo 'JMeter execution finished.'
+                        }
+                       perfReport sourceDataFiles: 'flask.jtl'
+                    }
+                } 
+            }
+            post {
+                always {
+                    echo 'Stopping Flask service...'
+                    bat 'taskkill /F /IM python.exe /T'
+                    echo 'Flask service stopped.'
                 }
             }
         }
     }
     post {
         always {
-            script {
-                try {
-                    echo 'Cleaning up...'
-                    
-                    bat 'taskkill /F /IM python.exe /T'
-                    bat 'taskkill /F /IM java.exe /T'
-                } catch (Exception e) {
-                    echo "Cleanup failed: ${e.getMessage()}"
-                }
-                bat 'call ${VIRTUAL_ENV}\\Scripts\\deactivate' 
-            }
-            archiveArtifacts artifacts: '**/result-*.xml', fingerprint: true
+            archiveArtifacts artifacts: '**/*.xml, **/*.out', fingerprint: true
+            echo 'Artifacts archived.'
+            // perfReport filterRegex: '', relativeFailedThresholdNegative: 1.2, relativeFailedThresholdPositive: 1.89, relativeUnstableThresholdNegative: 1.8, relativeUnstableThresholdPositive: 1.5, sourceDataFiles: 'results.csv'
+            // performanceReport parsers: [[$class: 'JMeterParser', glob: 'result.xml']], relativeFailedThresholdNegative: 1.2, relativeFailedThresholdPositive: 1.89, relativeUnstableThresholdNegative: 1.8, relativeUnstableThresholdPositive: 1.5
         }
         success {
+            cleanWs()
+            echo 'Cleaning done'
             echo 'Pipeline completed successfully!'
         }
         failure {
+            cleanWs()
+            echo 'Cleaning done'
             echo 'Pipeline failed.'
         }
     }
+}
+def logEnvironment() {
+    bat 'whoami'
+    bat 'hostname'
+    bat 'echo %WORKSPACE%'
+    bat 'dir'
 }
