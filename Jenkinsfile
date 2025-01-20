@@ -28,43 +28,44 @@ pipeline {
                         }
                     }
                 }
-                // stage('Unit Tests') {
-                //     steps {
-                //         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
-                //             bat 'python -m pytest --junitxml=result-unit.xml test\\unit'
-                //             junit 'result-unit.xml'
-                //         }
-                //     }
-                // } 
-                // stage('Tests Coverage') {
-                //     steps {
-                //         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
-                //             bat '''
-                //                 python -m coverage run --branch --source=app --omit=app\\__init__.py,app\\api.py
-                //                 coverage xml                           
-                //             '''
-                //             cobertura coberturaReportFile:'**\\coverage.xml', conditionalCoverageTargets:'100,90,80',lineCoverageTargets:'100,95,85',onlyStable: false
-                //         }
-                //     }
-                // } 
                 stage('Unit Tests') {
                     steps {
-                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            bat '''
-                                python -m pytest --junitxml=result-unit.xml --cov=app --cov-branch --cov-report=xml:coverage.xml test\\unit
-                            '''
+                        catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
+                            bat 'python -m pytest --junitxml=result-unit.xml test\\unit'
                             junit 'result-unit.xml'
                         }
                     }
-                }
-
-                stage('Test Coverage') {
+                } 
+                stage('Tests Coverage') {
                     steps {
-                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
+                        catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
+                            bat '''
+                                python -m coverage run --branch --source=app --omit=app\\__init__.py,app\\api.py -m pytest test\\unit
+                                coverage xml                           
+                            '''
+                            cobertura coberturaReportFile:'**\\coverage.xml', conditionalCoverageTargets:'100,90,80',lineCoverageTargets:'100,95,85',onlyStable: false
                         }
                     }
-                }
+                } 
+
+                // stage('Unit Tests') {
+                //     steps {
+                //         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                //             bat '''
+                //                 python -m pytest --junitxml=result-unit.xml --cov=app --cov-branch --cov-report=xml:coverage.xml test\\unit
+                //             '''
+                //             junit 'result-unit.xml'
+                //         }
+                //     }
+                // }
+
+                // stage('Test Coverage') {
+                //     steps {
+                //         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                //             cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
+                //         }
+                //     }
+                // }
 
                 stage('Static Analysis') {
                     steps {
