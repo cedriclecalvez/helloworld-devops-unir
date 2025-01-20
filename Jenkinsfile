@@ -47,14 +47,14 @@ pipeline {
                         }
                     }
                 } 
-                // stage('Static Analysis') {
-                //     steps {
-                //         bat '''
-                //             python -m flake8 --exit-zero --format=pylint app >flake8.out
-                //         '''
-                //         recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], qualityGates: [[threshold: 8, type: 'TOTAL', unstable: true], [threshold: 10, type: 'TOTAL', unstable: false]]
-                //     }
-                // } 
+                stage('Static Analysis') {
+                    steps {
+                        bat '''
+                            python -m flake8 --exit-zero --format=pylint app >flake8.out
+                        '''
+                        recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], qualityGates: [[threshold: 8, type: 'TOTAL', unstable: true], [threshold: 10, type: 'TOTAL', unstable: false]]
+                    }
+                } 
                 stage('Security Analysis') {
                     steps {
                         bat '''
@@ -63,33 +63,33 @@ pipeline {
                         recordIssues tools: [pyLint(name: 'Bandit', pattern: 'bandit.out')],qualityGates: [[threshold: 2, type: 'TOTAL', unstable: true], [threshold: 4, type: 'TOTAL', unstable: false]]
                     }
                 } 
-                // stage('Performance Tests') {
-                //     steps {
-                //         script{
-                //                 logEnvironment()
-                //                 echo 'Starting JMeter...'
-                //                     bat '''
-                //                         cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
-                //                         jmeter -n -t "%WORKSPACE%\\test\\jmeter\\flask.jmx" -f -l "%WORKSPACE%\\flask.jtl"
-                //                     '''
-                //                 echo 'JMeter execution finished.'
-                //         }
-                //        perfReport sourceDataFiles: 'flask.jtl'
-                //     }
-                // } 
+                stage('Performance Tests') {
+                    steps {
+                        script{
+                                logEnvironment()
+                                echo 'Starting JMeter...'
+                                    bat '''
+                                        cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
+                                        jmeter -n -t "%WORKSPACE%\\test\\jmeter\\flask.jmx" -f -l "%WORKSPACE%\\flask.jtl"
+                                    '''
+                                echo 'JMeter execution finished.'
+                        }
+                       perfReport sourceDataFiles: 'flask.jtl'
+                    }
+                } 
             }
-            // post {
-            //     always {
-            //         echo 'Stopping Flask service...'
-            //         bat 'taskkill /F /IM python.exe /T'
-            //         echo 'Flask service stopped.'
-            //     }
-            // }
+            post {
+                always {
+                    echo 'Stopping Flask service...'
+                    bat 'taskkill /F /IM python.exe /T'
+                    echo 'Flask service stopped.'
+                }
+            }
         }
     }
     post {
         always {
-            archiveArtifacts artifacts: '**/*.xml, **/*.out', fingerprint: true
+            archiveArtifacts artifacts: '**/*.xml, **/*.out,**/*.jtl', fingerprint: true
             echo 'Artifacts archived.'
             // perfReport filterRegex: '', relativeFailedThresholdNegative: 1.2, relativeFailedThresholdPositive: 1.89, relativeUnstableThresholdNegative: 1.8, relativeUnstableThresholdPositive: 1.5, sourceDataFiles: 'results.csv'
             // performanceReport parsers: [[$class: 'JMeterParser', glob: 'result.xml']], relativeFailedThresholdNegative: 1.2, relativeFailedThresholdPositive: 1.89, relativeUnstableThresholdNegative: 1.8, relativeUnstableThresholdPositive: 1.5
