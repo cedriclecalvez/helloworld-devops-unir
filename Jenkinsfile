@@ -53,7 +53,8 @@ pipeline {
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             bat '''
                                
-                                python -m pytest --junitxml=result-unit.xml --cov=app --cov-branch --cov-report=xml:coverage.xml --cov-omit=app/__init__.py,app/api.py test/unit
+                            coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m pytest --junitxml=result-unit.xml test/unit
+                            coverage xml
 
                             '''
                             junit 'result-unit.xml'
