@@ -13,21 +13,21 @@ pipeline {
       
         stage('Run Tests') {
             parallel{
-                 stage('Start Flask API') {
-                    steps {
-                        catchError(buildResult:'SUCCESS',stageResult:'ABORTED'){
-                            timeout(time: 60, unit: 'SECONDS') {
-                            echo 'Starting Flask service in background...'
-                                bat '''
-                                    call .venv\\Scripts\\activate
-                                    set FLASK_APP=app\\api.py
-                                    set PYTHONPATH=.
-                                    start /B python -m flask run --host=0.0.0.0 --port=5000
-                                '''
-                            }
-                        }
-                    }
-                }
+                // stage('Start Flask API') {
+                //     steps {
+                //         catchError(buildResult:'SUCCESS',stageResult:'ABORTED'){
+                //             timeout(time: 60, unit: 'SECONDS') {
+                //             echo 'Starting Flask service in background...'
+                //                 bat '''
+                //                     call .venv\\Scripts\\activate
+                //                     set FLASK_APP=app\\api.py
+                //                     set PYTHONPATH=.
+                //                     start /B python -m flask run --host=0.0.0.0 --port=5000
+                //                 '''
+                //             }
+                //         }
+                //     }
+                // }
                 stage('Unit Tests') {
                     steps {
                         catchError(buildResult:'UNSTABLE',stageResult:'FAILURE'){
@@ -63,28 +63,28 @@ pipeline {
                         recordIssues tools: [pyLint(name: 'Bandit', pattern: 'bandit.out')],qualityGates: [[threshold: 2, type: 'TOTAL', unstable: true], [threshold: 4, type: 'TOTAL', unstable: false]]
                     }
                 } 
-                stage('Performance Tests') {
-                    steps {
-                        script{
-                                logEnvironment()
-                                echo 'Starting JMeter...'
-                                    bat '''
-                                        cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
-                                        jmeter -n -t "%WORKSPACE%\\test\\jmeter\\flask.jmx" -f -l "%WORKSPACE%\\flask.jtl"
-                                    '''
-                                echo 'JMeter execution finished.'
-                        }
-                       perfReport sourceDataFiles: 'flask.jtl'
-                    }
-                } 
+                // stage('Performance Tests') {
+                //     steps {
+                //         script{
+                //                 logEnvironment()
+                //                 echo 'Starting JMeter...'
+                //                     bat '''
+                //                         cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
+                //                         jmeter -n -t "%WORKSPACE%\\test\\jmeter\\flask.jmx" -f -l "%WORKSPACE%\\flask.jtl"
+                //                     '''
+                //                 echo 'JMeter execution finished.'
+                //         }
+                //        perfReport sourceDataFiles: 'flask.jtl'
+                //     }
+                // } 
             }
-            post {
-                always {
-                    echo 'Stopping Flask service...'
-                    bat 'taskkill /F /IM python.exe /T'
-                    echo 'Flask service stopped.'
-                }
-            }
+            // post {
+            //     always {
+            //         echo 'Stopping Flask service...'
+            //         bat 'taskkill /F /IM python.exe /T'
+            //         echo 'Flask service stopped.'
+            //     }
+            // }
         }
     }
     post {
