@@ -18,8 +18,8 @@ pipeline {
                         catchError(buildResult:'SUCCESS',stageResult:'ABORTED'){
                             timeout(time: 60, unit: 'SECONDS') {
                             echo 'Starting Flask service in background...'
+                                    // call .venv\\Scripts\\activate
                                 bat '''
-                                    call .venv\\Scripts\\activate
                                     set FLASK_APP=app\\api.py
                                     set PYTHONPATH=.
                                     start /B python -m flask run --host=0.0.0.0 --port=5000
