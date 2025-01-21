@@ -6,7 +6,7 @@ pipeline {
                 script {
                     logEnvironment()
                 }
-                git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
+                git branch: "${BRANCH_NAME}",url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
             }
         }
       
