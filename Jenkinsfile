@@ -6,7 +6,7 @@ pipeline {
                 script {
                     logEnvironment()
                 }
-                git branch: "${BRANCH_NAME}",url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
+                git branch: "feature_fix_coverage",url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
             }
         }
       
