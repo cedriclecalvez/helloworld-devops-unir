@@ -32,9 +32,9 @@ pipeline {
                     }
                 }
                 stage('Unit Tests') {
-                    agent {
-                        label 'agent_unit_test'
-                    }
+                    // agent {
+                    //     label 'agent_unit_test'
+                    // }
                     steps {
                         script {
                            logEnvironment()
