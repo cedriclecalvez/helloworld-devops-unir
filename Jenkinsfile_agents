@@ -8,6 +8,7 @@ pipeline {
                     logEnvironment()
                 }
                 git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
+                timeout: 5
                 stash name: 'get_code', includes: '**'
             }
         }
