@@ -3,13 +3,11 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                cleanWs()
+                deleteDir()
                 script {
                     logEnvironment()
                 }
-                 timeout(time: 5, unit: 'MINUTES') {
-                    git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
-                }
+                git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
                 stash name: 'get_code', includes: '**'
             }
         }
@@ -42,7 +40,7 @@ pipeline {
                         script {
                            logEnvironment()
                         }
-                        cleanWs()
+                        deleteDir()
                         
                         unstash 'get_code'
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
@@ -62,7 +60,7 @@ pipeline {
                         script {
                            logEnvironment()
                         }
-                        cleanWs()
+                        deleteDir()
                         
                         unstash 'get_code'
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
@@ -78,7 +76,7 @@ pipeline {
                         script {
                            logEnvironment()
                         }
-                        cleanWs()
+                        deleteDir()
                         
                         unstash 'get_code'
 
@@ -96,7 +94,7 @@ pipeline {
                         script {
                            logEnvironment()
                         }
-                        cleanWs()
+                        deleteDir()
                         
                         unstash 'get_code'
 
@@ -114,7 +112,7 @@ pipeline {
                         script {
                             logEnvironment()
                         }
-                        cleanWs()
+                        deleteDir()
                         
                         unstash 'get_code'
 
@@ -140,12 +138,12 @@ pipeline {
            
         }
         success {
-            cleanWs()
+            deleteDir()
             echo 'Cleaning done'
             echo 'Pipeline completed successfully!'
         }
         failure {
-            cleanWs()
+            deleteDir()
             echo 'Cleaning done'
             echo 'Pipeline failed.'
         }
