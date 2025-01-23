@@ -131,7 +131,6 @@ pipeline {
             // }
         // }
         }
-    }
     post {
         always {
             archiveArtifacts artifacts: '**/*.xml, **/*.out,**/*.jtl', fingerprint: true
@@ -148,6 +147,7 @@ pipeline {
             echo 'Cleaning done'
             echo 'Pipeline failed.'
         }
+    }
     }
 
 def logEnvironment() {
