@@ -7,6 +7,7 @@ pipeline {
                     logEnvironment()
                 }
                 git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
+                stash name: 'get_code', includes: '**'
             }
         }
       
@@ -43,6 +44,7 @@ pipeline {
                         label 'agent_coverage'
                     }
                     steps {
+                        unstash 'get_code'
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
                         }
@@ -53,6 +55,8 @@ pipeline {
                         label 'agent_static_analysis'
                     }
                     steps {
+                        unstash 'get_code'
+
                         bat '''
                             python -m flake8 --exit-zero --format=pylint app >flake8.out
                         '''
@@ -64,6 +68,8 @@ pipeline {
                         label 'agent_security_analysis'
                     }
                     steps {
+                        unstash 'get_code'
+
                         bat '''
                             bandit --exit-zero -r . -f custom -o bandit.out --msg-template "{abspath}:{line}: [{test_id}]: {msg}"
                         '''
@@ -75,6 +81,8 @@ pipeline {
                         label 'agent_performance'
                     }
                     steps {
+                        unstash 'get_code'
+
                         script{
                                 logEnvironment()
                                 echo 'Starting JMeter...'
