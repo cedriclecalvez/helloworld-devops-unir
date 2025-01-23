@@ -104,31 +104,31 @@ pipeline {
                     }
                 } 
             }
-                stage('Performance Tests') {
-                    agent {
-                        label 'agent_performance'
-                    }
-                    steps {
-                        script {
-                           logEnvironment()
-                        }
-                        cleanWs()
-                        
-                        unstash 'get_code'
-
-                        script{
-                                logEnvironment()
-                                echo 'Starting JMeter...'
-                                    bat '''
-                                        cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
-                                        jmeter -n -t "%WORKSPACE%\\test\\jmeter\\flask.jmx" -f -l "%WORKSPACE%\\flask.jtl"
-                                    '''
-                                echo 'JMeter execution finished.'
-                        }
-                       perfReport sourceDataFiles: 'flask.jtl'
-                    }
-                } 
         }
+        stage('Performance Tests') {
+            agent {
+                label 'agent_performance'
+            }
+            steps {
+                script {
+                    logEnvironment()
+                }
+                cleanWs()
+                
+                unstash 'get_code'
+
+                script{
+                        logEnvironment()
+                        echo 'Starting JMeter...'
+                            bat '''
+                                cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
+                                jmeter -n -t "%WORKSPACE%\\test\\jmeter\\flask.jmx" -f -l "%WORKSPACE%\\flask.jtl"
+                            '''
+                        echo 'JMeter execution finished.'
+                }
+                perfReport sourceDataFiles: 'flask.jtl'
+            }
+        } 
     }
     post {
         always {
