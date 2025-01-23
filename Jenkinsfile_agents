@@ -10,7 +10,7 @@ pipeline {
                 git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
                 stash name: 'get_code', includes: '**'
             }
-        // }
+        }
       
       
         // stage('Run Tests') {
