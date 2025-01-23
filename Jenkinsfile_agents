@@ -52,6 +52,7 @@ pipeline {
                                       lineCoverageTargets: '100,95,85', 
                                       onlyStable: false
                         }
+                        cleanWs()
                     }
                 }
                 // stage('Test Coverage') {
@@ -87,6 +88,7 @@ pipeline {
                         recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], 
                                      qualityGates: [[threshold: 8, type: 'TOTAL', unstable: true], 
                                                     [threshold: 10, type: 'TOTAL', unstable: false]]
+                     cleanWs()
                     }
                 } 
                 stage('Security Analysis') {
@@ -105,6 +107,7 @@ pipeline {
                         recordIssues tools: [pyLint(name: 'Bandit', pattern: 'bandit.out')],
                                      qualityGates: [[threshold: 2, type: 'TOTAL', unstable: true], 
                                                     [threshold: 4, type: 'TOTAL', unstable: false]]
+                     cleanWs()
                     }
                 } 
                 stage('Performance Tests') {
@@ -125,6 +128,7 @@ pipeline {
                             echo 'JMeter execution finished.'
                         }
                         perfReport sourceDataFiles: 'flask.jtl'
+                        cleanWs()  
                     }
                 } 
             }
@@ -132,9 +136,9 @@ pipeline {
     }
     post {
         always {
+            cleanWs()
             archiveArtifacts artifacts: '**/*.xml, **/*.out, **/*.jtl', fingerprint: true
             echo 'Artifacts archived.'
-            cleanWs()
 
         }
         success {
