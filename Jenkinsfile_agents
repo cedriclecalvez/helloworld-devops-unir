@@ -16,6 +16,9 @@ pipeline {
             parallel{
                 stage('Start Flask API') {
                     steps {
+                        script {
+                           logEnvironment()
+                        }
                         catchError(buildResult:'SUCCESS',stageResult:'ABORTED'){
                             timeout(time: 60, unit: 'SECONDS') {
                             echo 'Starting Flask service in background...'
@@ -29,7 +32,14 @@ pipeline {
                     }
                 }
                 stage('Unit Tests') {
+                    agent {
+                        label 'agent_unit_test'
+                    }
                     steps {
+                        script {
+                           logEnvironment()
+                        }
+                        unstash 'get_code'
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             bat '''
                                 coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m pytest --junitxml=result-unit.xml test/unit
@@ -44,6 +54,9 @@ pipeline {
                         label 'agent_coverage'
                     }
                     steps {
+                        script {
+                           logEnvironment()
+                        }
                         unstash 'get_code'
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
@@ -55,6 +68,9 @@ pipeline {
                         label 'agent_static_analysis'
                     }
                     steps {
+                        script {
+                           logEnvironment()
+                        }
                         unstash 'get_code'
 
                         bat '''
@@ -68,6 +84,9 @@ pipeline {
                         label 'agent_security_analysis'
                     }
                     steps {
+                        script {
+                           logEnvironment()
+                        }
                         unstash 'get_code'
 
                         bat '''
@@ -81,6 +100,9 @@ pipeline {
                         label 'agent_performance'
                     }
                     steps {
+                        script {
+                           logEnvironment()
+                        }
                         unstash 'get_code'
 
                         script{
