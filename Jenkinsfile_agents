@@ -10,10 +10,10 @@ pipeline {
                 git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
                 stash name: 'get_code', includes: '**'
             }
-        }
+        // }
       
       
-        stage('Run Tests') {
+        // stage('Run Tests') {
             // parallel{
                 stage('Start Flask API') {
                     steps {
@@ -129,6 +129,7 @@ pipeline {
                     }
                 } 
             // }
+        // }
         }
     }
     post {
