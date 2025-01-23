@@ -53,9 +53,9 @@ pipeline {
                     }
                 }
                 stage('Test Coverage') {
-                    // agent {
-                    //     label 'agent_coverage'
-                    // }
+                    agent {
+                        label 'agent_coverage'
+                    }
                     steps {
                         cleanWs()
                         script {
