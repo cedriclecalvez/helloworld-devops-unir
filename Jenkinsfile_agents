@@ -50,7 +50,7 @@ pipeline {
                     }
                 }
                 stage('Test Coverage') {
-                   agent {
+                    agent {
                         label 'agent_unit_test'
                     }
                     steps {
@@ -67,6 +67,9 @@ pipeline {
                     }
                 }
                 stage('Static Analysis') {
+                    agent {
+                        label 'agent_static_analysis'
+                    }
                     steps {
                         script {
                             logEnvironment()
