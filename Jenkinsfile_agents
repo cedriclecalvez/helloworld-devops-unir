@@ -7,8 +7,9 @@ pipeline {
                 script {
                     logEnvironment()
                 }
-                git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
-                timeout: 5
+                 timeout(time: 5, unit: 'MINUTES') {
+                    git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
+                }
                 stash name: 'get_code', includes: '**'
             }
         }
