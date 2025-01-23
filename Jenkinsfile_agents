@@ -149,7 +149,7 @@ pipeline {
             echo 'Pipeline failed.'
         }
     }
-}
+
 def logEnvironment() {
     bat 'whoami'
     bat 'hostname'
