@@ -40,11 +40,11 @@ pipeline {
                     }
                     steps {
                         cleanWs()
-                        unstash 'get_code'
                         script {
                             logEnvironment()
                         }
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                            unstash 'get_code'  
                             bat '''
                                 coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m pytest --junitxml=result-unit.xml test/unit
                                 coverage xml
@@ -55,7 +55,6 @@ pipeline {
                                       lineCoverageTargets: '100,95,85', 
                                       onlyStable: false
                         }
-                        cleanWs()
                     }
                 }
                 // stage('Test Coverage') {
@@ -91,7 +90,6 @@ pipeline {
                         recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')], 
                                      qualityGates: [[threshold: 8, type: 'TOTAL', unstable: true], 
                                                     [threshold: 10, type: 'TOTAL', unstable: false]]
-                     cleanWs()
                     }
                 } 
                 stage('Security Analysis') {
@@ -110,7 +108,6 @@ pipeline {
                         recordIssues tools: [pyLint(name: 'Bandit', pattern: 'bandit.out')],
                                      qualityGates: [[threshold: 2, type: 'TOTAL', unstable: true], 
                                                     [threshold: 4, type: 'TOTAL', unstable: false]]
-                     cleanWs()
                     }
                 } 
                 stage('Performance Tests') {
@@ -131,7 +128,6 @@ pipeline {
                             echo 'JMeter execution finished.'
                         }
                         perfReport sourceDataFiles: 'flask.jtl'
-                        cleanWs()  
                     }
                 } 
             }
@@ -142,7 +138,6 @@ pipeline {
             cleanWs()
             archiveArtifacts artifacts: '**/*.xml, **/*.out, **/*.jtl', fingerprint: true
             echo 'Artifacts archived.'
-
         }
         success {
             cleanWs()
