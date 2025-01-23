@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                deleteDir()
+                cleanWs()
                 script {
                     logEnvironment()
                 }
@@ -37,10 +37,10 @@ pipeline {
                         label 'agent_unit_test'
                     }
                     steps {
+                        cleanWs()
                         script {
                            logEnvironment()
                         }
-                        deleteDir()
                         
                         unstash 'get_code'
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
@@ -53,14 +53,14 @@ pipeline {
                     }
                 }
                 stage('Test Coverage') {
-                    agent {
-                        label 'agent_coverage'
-                    }
+                    // agent {
+                    //     label 'agent_coverage'
+                    // }
                     steps {
+                        cleanWs()
                         script {
                            logEnvironment()
                         }
-                        deleteDir()
                         
                         unstash 'get_code'
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
@@ -69,14 +69,14 @@ pipeline {
                     }
                 }
                 stage('Static Analysis') {
-                    agent {
-                        label 'agent_static_analysis'
-                    }
+                    // agent {
+                    //     label 'agent_static_analysis'
+                    // }
                     steps {
+                        cleanWs()
                         script {
                            logEnvironment()
                         }
-                        deleteDir()
                         
                         unstash 'get_code'
 
@@ -87,14 +87,14 @@ pipeline {
                     }
                 } 
                 stage('Security Analysis') {
-                    agent {
-                        label 'agent_security_analysis'
-                    }
+                    // agent {
+                    //     label 'agent_security_analysis'
+                    // }
                     steps {
+                        cleanWs()
                         script {
                            logEnvironment()
                         }
-                        deleteDir()
                         
                         unstash 'get_code'
 
@@ -105,14 +105,14 @@ pipeline {
                     }
                 } 
                 stage('Performance Tests') {
-                    agent {
-                        label 'agent_performance'
-                    }
+                    // agent {
+                    //     label 'agent_performance'
+                    // }
                     steps {
+                        cleanWs()
                         script {
                             logEnvironment()
                         }
-                        deleteDir()
                         
                         unstash 'get_code'
 
@@ -138,12 +138,12 @@ pipeline {
            
         }
         success {
-            deleteDir()
+            cleanWs()
             echo 'Cleaning done'
             echo 'Pipeline completed successfully!'
         }
         failure {
-            deleteDir()
+            cleanWs()
             echo 'Cleaning done'
             echo 'Pipeline failed.'
         }
