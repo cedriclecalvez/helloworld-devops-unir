@@ -14,7 +14,7 @@ pipeline {
       
       
         stage('Run Tests') {
-            parallel{
+            // parallel{
                 stage('Start Flask API') {
                     steps {
                         script {
@@ -128,7 +128,7 @@ pipeline {
                         perfReport sourceDataFiles: 'flask.jtl'
                     }
                 } 
-            }
+            // }
         }
     }
     post {
