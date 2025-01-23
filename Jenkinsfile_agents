@@ -32,13 +32,14 @@ pipeline {
                     }
                 }
                 stage('Unit Tests') {
-                    // agent {
-                    //     label 'agent_unit_test'
-                    // }
+                    agent {
+                        label 'agent_unit_test'
+                    }
                     steps {
                         script {
                            logEnvironment()
                         }
+                        cleanWs()
                         unstash 'get_code'
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             bat '''
@@ -57,6 +58,7 @@ pipeline {
                         script {
                            logEnvironment()
                         }
+                        cleanWs()
                         unstash 'get_code'
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
@@ -71,6 +73,7 @@ pipeline {
                         script {
                            logEnvironment()
                         }
+                        cleanWs()
                         unstash 'get_code'
 
                         bat '''
@@ -87,6 +90,7 @@ pipeline {
                         script {
                            logEnvironment()
                         }
+                        cleanWs()
                         unstash 'get_code'
 
                         bat '''
@@ -103,6 +107,7 @@ pipeline {
                         script {
                            logEnvironment()
                         }
+                        cleanWs()
                         unstash 'get_code'
 
                         script{
