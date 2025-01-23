@@ -22,7 +22,7 @@ pipeline {
                             logEnvironment()
                         }
                         catchError(buildResult: 'SUCCESS', stageResult: 'ABORTED') {
-                            timeout(time: 120, unit: 'SECONDS') { // Augmenter le délai si nécessaire
+                            timeout(time: 120, unit: 'SECONDS') { 
                                 echo 'Starting Flask service in background...'
                                 bat '''
                                     set FLASK_APP=app\\api.py
@@ -48,19 +48,6 @@ pipeline {
                                 coverage xml
                             '''
                             junit 'result-unit.xml'
-                        }
-                    }
-                }
-                stage('Test Coverage') {
-                    agent {
-                        label 'agent_coverage'
-                    }
-                    steps {
-                        unstash 'get_code'
-                        script {
-                            logEnvironment()
-                        }
-                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             cobertura coberturaReportFile: 'coverage.xml', 
                                       conditionalCoverageTargets: '100,90,80', 
                                       lineCoverageTargets: '100,95,85', 
@@ -68,6 +55,23 @@ pipeline {
                         }
                     }
                 }
+                // stage('Test Coverage') {
+                //     agent {
+                //         label 'agent_coverage'
+                //     }
+                //     steps {
+                //         unstash 'get_code'
+                //         script {
+                //             logEnvironment()
+                //         }
+                //         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                //             cobertura coberturaReportFile: 'coverage.xml', 
+                //                       conditionalCoverageTargets: '100,90,80', 
+                //                       lineCoverageTargets: '100,95,85', 
+                //                       onlyStable: false
+                //         }
+                //     }
+                // }
                 stage('Static Analysis') {
                     agent {
                         label 'agent_static_analysis'
