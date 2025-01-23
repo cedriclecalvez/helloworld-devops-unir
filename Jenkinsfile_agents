@@ -44,7 +44,7 @@ pipeline {
                             logEnvironment()
                         }
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            unstash 'get_code'  
+                            unstash name:'get_code'  
                             bat '''
                                 coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m pytest --junitxml=result-unit.xml test/unit
                                 coverage xml
@@ -62,7 +62,7 @@ pipeline {
                 //         label 'agent_coverage'
                 //     }
                 //     steps {
-                //         unstash 'get_code'
+                //         unstash name: 'get_code'
                 //         script {
                 //             logEnvironment()
                 //         }
@@ -80,7 +80,7 @@ pipeline {
                     }
                     steps {
                         cleanWs()
-                        unstash 'get_code'
+                        unstash name: 'get_code'
                         script {
                             logEnvironment()
                         }
@@ -98,7 +98,7 @@ pipeline {
                     }
                     steps {
                         cleanWs()
-                        unstash 'get_code'
+                        unstash name: 'get_code'
                         script {
                             logEnvironment()
                         }
@@ -116,7 +116,7 @@ pipeline {
                     }
                     steps {
                         cleanWs()
-                        unstash 'get_code'
+                        unstash name: 'get_code'
                         script {
                             logEnvironment()
 
