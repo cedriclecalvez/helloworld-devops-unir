@@ -8,8 +8,10 @@ pipeline {
                     logEnvironment()
                 }
                 retry(3) {
-                git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
-                stash name: 'get_code', includes: '**'
+                     timeout(time: 20, unit: 'SECONDS') {
+                        git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
+                        stash name: 'get_code', includes: '**'
+                     }
                 }
             }
         }
