@@ -7,12 +7,8 @@ pipeline {
                 script {
                     logEnvironment()
                 }
-                retry(3) {
-                     timeout(time: 20, unit: 'SECONDS') {
                         git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
                         stash name: 'get_code', includes: '**'
-                     }
-                }
             }
         }
       
@@ -40,6 +36,7 @@ pipeline {
                         label 'agent_unit_test'
                     }
                     steps {
+                        cleanWs()
                         unstash 'get_code'
                         script {
                             logEnvironment()
@@ -79,6 +76,7 @@ pipeline {
                         label 'agent_static_analysis'
                     }
                     steps {
+                        cleanWs()
                         unstash 'get_code'
                         script {
                             logEnvironment()
@@ -96,6 +94,7 @@ pipeline {
                         label 'agent_security_analysis'
                     }
                     steps {
+                        cleanWs()
                         unstash 'get_code'
                         script {
                             logEnvironment()
@@ -113,6 +112,7 @@ pipeline {
                         label 'agent_performance'
                     }
                     steps {
+                        cleanWs()
                         unstash 'get_code'
                         script {
                             logEnvironment()
