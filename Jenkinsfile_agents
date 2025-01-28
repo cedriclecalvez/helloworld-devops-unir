@@ -62,7 +62,6 @@ pipeline {
                     label 'agent_unit_test'
                 }
                 steps {
-                    cleanWs()
                     script {
                         logEnvironment()
                     }
