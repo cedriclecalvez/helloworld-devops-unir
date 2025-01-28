@@ -34,7 +34,7 @@ pipeline {
                                 coverage xml
                             '''
                             junit 'result-unit.xml'
-                        
+                            stash name: 'unit_test_results', includes: 'result-unit.xml'
                         }
                     }
                 } 
@@ -48,6 +48,7 @@ pipeline {
                         }
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
+                            stash name: 'coverage_results', includes: 'coverage.xml'
                         }
                     }
                 }
@@ -65,6 +66,8 @@ pipeline {
                             python -m flake8 --exit-zero --format=pylint app >flake8.out
                         '''
                         recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')],qualityGates: [[threshold: 8, type: 'TOTAL',unstable: true],[threshold: 10, type: 'TOTAL', unstable: false]]
+                        stash name: 'flake8_results', includes: 'flake8.out'
+
                     }
                 } 
                 stage('Security Analysis') {
@@ -123,6 +126,8 @@ pipeline {
                             echo 'JMeter execution finished.'
                         }
                         perfReport sourceDataFiles: 'flask.jtl'
+                        stash name: 'flask_results', includes: 'flask.jtl'
+
                     }
                 } 
             }
@@ -130,6 +135,10 @@ pipeline {
     }
     post {
         always {
+            unstash 'unit_test_results' 
+            unstash 'coverage_results' 
+            unstash 'flake8_results' 
+            unstash 'flask_results' 
             archiveArtifacts artifacts: '**/*.xml, **/*.out, **/*.jtl', fingerprint: true
             echo 'Artifacts archived.'
             cleanWs()
