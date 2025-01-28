@@ -42,15 +42,14 @@ pipeline {
                 label 'agent_coverage'
             }
             steps {
-                
+                cleanWs()
                 script {
                     logEnvironment()
                 }
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     unstash name: 'get_code'
-                    unstash name: 'coverage_results'  // Restaurer les résultats des tests unitaires
-                    
-                    cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
+                    unstash name: 'coverage_results'
+                    cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false, unstableThresholds: [lineCoverage: 85, conditionalCoverage: 80]
                 }
             }
         }
