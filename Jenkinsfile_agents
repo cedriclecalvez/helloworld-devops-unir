@@ -17,27 +17,7 @@ pipeline {
                        
             }
         }
-      
-        stage('Run Tests') {
-            parallel {
-                stage('Start Flask API') {
-                    steps {
-                        script {
-                            logEnvironment()
-                        }
-                        catchError(buildResult: 'SUCCESS', stageResult: 'ABORTED') {
-                            timeout(time: 120, unit: 'SECONDS') { 
-                                echo 'Starting Flask service in background...'
-                                bat '''
-                                    set FLASK_APP=app\\api.py
-                                    set PYTHONPATH=.
-                                    start /B python -m flask run --host=0.0.0.0 --port=5000
-                                '''
-                            }
-                        }
-                    }
-                }
-                stage('Unit Tests') {
+           stage('Unit Tests') {
                     agent {
                         label 'agent_unit_test'
                     }
@@ -75,6 +55,27 @@ pipeline {
                         }
                     }
                 }
+      
+        stage('Run Tests') {
+            parallel {
+                stage('Start Flask API') {
+                    steps {
+                        script {
+                            logEnvironment()
+                        }
+                        catchError(buildResult: 'SUCCESS', stageResult: 'ABORTED') {
+                            timeout(time: 120, unit: 'SECONDS') { 
+                                echo 'Starting Flask service in background...'
+                                bat '''
+                                    set FLASK_APP=app\\api.py
+                                    set PYTHONPATH=.
+                                    start /B python -m flask run --host=0.0.0.0 --port=5000
+                                '''
+                            }
+                        }
+                    }
+                }
+             
                 stage('Static Analysis') {
                     agent {
                         label 'agent_static_analysis'
