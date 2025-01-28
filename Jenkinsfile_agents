@@ -10,11 +10,8 @@ pipeline {
                 script {
                     logEnvironment()
                 }
-                retry(10){
-                    git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
-                    stash name: 'get_code', includes: '**'
-                }
-                       
+                git url: 'https://github.com/cedriclecalvez/helloworld-devops-unir'
+                stash name: 'get_code', includes: '**'
             }
         }
        
@@ -40,7 +37,7 @@ pipeline {
                         }
                     }
                 }
-                 stage('Unit Tests') {
+            stage('Unit Tests') {
                 agent {
                     label 'agent_unit_test'
                 }
@@ -56,13 +53,13 @@ pipeline {
                             coverage xml
                         '''
                         junit 'result-unit.xml'
-                        stash name: 'coverage_results', includes: 'coverage.xml'
+                       
                     }
                 }
             }
             stage('Test Coverage') {
                 agent {
-                    label 'agent_coverage'
+                    label 'agent_unit_test'
                 }
                 steps {
                     cleanWs()
@@ -70,8 +67,7 @@ pipeline {
                         logEnvironment()
                     }
                     catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                        unstash name: 'get_code'
-                        unstash name: 'coverage_results'
+                        
                         cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
                     }
                 }
