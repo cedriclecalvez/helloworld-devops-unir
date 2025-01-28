@@ -17,44 +17,47 @@ pipeline {
                        
             }
         }
-           stage('Unit Tests') {
-                    agent {
-                        label 'agent_unit_test'
-                    }
-                    steps {
-                        cleanWs()
-                        script {
-                            logEnvironment()
-                        }
-                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            unstash name:'get_code'  
-                            bat '''
-                                coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m pytest --junitxml=result-unit.xml test/unit
-                                coverage xml
-                            '''
-                            junit 'result-unit.xml'
-                            stash name: 'coverage_results', includes: 'coverage xml'
-                        }
-                    }
+        stage('Unit Tests') {
+            agent {
+                label 'agent_unit_test'
+            }
+            steps {
+                cleanWs()
+                script {
+                    logEnvironment()
                 }
-                stage('Test Coverage') {
-                    agent {
-                        label 'agent_coverage'
-                    }
-                    steps {
-                        unstash name: 'get_code'
-                        unstash name: 'coverage_results'
-                        script {
-                            logEnvironment()
-                        }
-                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            cobertura coberturaReportFile: 'coverage.xml', 
-                                      conditionalCoverageTargets: '100,90,80', 
-                                      lineCoverageTargets: '100,95,85', 
-                                      onlyStable: false
-                        }
-                    }
+                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                    unstash name:'get_code'  
+                    bat '''
+                        pyhton m pytest --junitxml=result-unit.xml test/unit
+                        coverage xml
+                    '''
+                    junit 'result-unit.xml'
+                    stash name: 'unit_tests_results', includes: 'result-unit.xml'
                 }
+            }
+        }
+        stage('Test Coverage') {
+            agent {
+                label 'agent_coverage'
+            }
+            steps {
+                unstash name: 'get_code'
+                unstash name: 'unit_tests_results'
+                script {
+                    logEnvironment()
+                }
+                bat'''
+                coverage run --branch --source=app --omit=app/__init__.py,app/api.py
+                '''
+                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                    cobertura coberturaReportFile: 'coverage.xml', 
+                                conditionalCoverageTargets: '100,90,80', 
+                                lineCoverageTargets: '100,95,85', 
+                                onlyStable: false
+                }
+            }
+        }
       
         stage('Run Tests') {
             parallel {
