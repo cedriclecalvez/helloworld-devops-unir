@@ -20,42 +20,7 @@ pipeline {
        
       
         stage('Run Tests') {
- stage('Unit Tests') {
-            agent {
-                label 'agent_unit_test'
-            }
-            steps {
-                cleanWs()
-                script {
-                    logEnvironment()
-                }
-                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                    unstash name:'get_code'  
-                    bat '''
-                        coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m pytest --junitxml=result-unit.xml test/unit
-                        coverage xml
-                    '''
-                    junit 'result-unit.xml'
-                    stash name: 'coverage_results', includes: 'coverage.xml'
-                }
-            }
-        }
-        stage('Test Coverage') {
-            agent {
-                label 'agent_coverage'
-            }
-            steps {
-                cleanWs()
-                script {
-                    logEnvironment()
-                }
-                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                    unstash name: 'get_code'
-                    unstash name: 'coverage_results'
-                    cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
-                }
-            }
-        }
+           
 
             parallel {
                 stage('Start Flask API') {
@@ -75,6 +40,42 @@ pipeline {
                         }
                     }
                 }
+                 stage('Unit Tests') {
+                agent {
+                    label 'agent_unit_test'
+                }
+                steps {
+                    cleanWs()
+                    script {
+                        logEnvironment()
+                    }
+                    catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                        unstash name:'get_code'  
+                        bat '''
+                            coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m pytest --junitxml=result-unit.xml test/unit
+                            coverage xml
+                        '''
+                        junit 'result-unit.xml'
+                        stash name: 'coverage_results', includes: 'coverage.xml'
+                    }
+                }
+            }
+            stage('Test Coverage') {
+                agent {
+                    label 'agent_coverage'
+                }
+                steps {
+                    cleanWs()
+                    script {
+                        logEnvironment()
+                    }
+                    catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                        unstash name: 'get_code'
+                        unstash name: 'coverage_results'
+                        cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
+                    }
+                }
+            }
              
                 stage('Static Analysis') {
                     agent {
