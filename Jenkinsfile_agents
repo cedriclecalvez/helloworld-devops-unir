@@ -30,7 +30,6 @@ pipeline {
                     unstash name:'get_code'  
                     bat '''
                         python -m pytest --junitxml=result-unit.xml test/unit
-                        coverage xml
                     '''
                     junit 'result-unit.xml'
                     stash name: 'unit_tests_results', includes: 'result-unit.xml'
@@ -48,7 +47,7 @@ pipeline {
                     logEnvironment()
                 }
                 bat'''
-                coverage run --branch --source=app --omit=app/__init__.py,app/api.py
+                    coverage run --branch --source=app --omit=app/__init__.py,app/api.py coverage xml
                 '''
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     cobertura coberturaReportFile: 'coverage.xml', 
