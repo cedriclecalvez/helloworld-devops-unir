@@ -82,6 +82,7 @@ pipeline {
         always {
             archiveArtifacts artifacts: '**/*.xml, **/*.out,**/*.jtl', fingerprint: true
             echo 'Artifacts archived.'
+            cleanWs()
            
         }
         success {
