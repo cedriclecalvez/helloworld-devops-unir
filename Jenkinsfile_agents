@@ -49,7 +49,7 @@ pipeline {
                     unstash name: 'get_code'
                     unstash name: 'unit_tests_results'  // Restaurer les résultats des tests unitaires
                     bat'''
-                        coverage run --branch --source=app --omit=app/__init__.py,app/api.py coverage xml
+                        python -m coverage run --branch --source=app --omit=app/__init__.py,app/api.py coverage xml
                     '''
                     cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
                 }
