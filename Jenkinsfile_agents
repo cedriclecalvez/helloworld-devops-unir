@@ -135,10 +135,10 @@ pipeline {
     }
     post {
         always {
-            unstash 'unit_test_results' 
-            unstash 'coverage_results' 
-            unstash 'flake8_results' 
-            unstash 'flask_results' 
+            // unstash 'unit_test_results' 
+            // unstash 'coverage_results' 
+            // unstash 'flake8_results' 
+            // unstash 'flask_results' 
             archiveArtifacts artifacts: '**/*.xml, **/*.out, **/*.jtl', fingerprint: true
             echo 'Artifacts archived.'
             cleanWs()
