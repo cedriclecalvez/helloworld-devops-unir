@@ -60,23 +60,23 @@ pipeline {
                         }
                     }
                 }
-                // stage('Test Coverage') {
-                //     agent {
-                //         label 'agent_coverage'
-                //     }
-                //     steps {
-                //         unstash name: 'get_code'
-                //         script {
-                //             logEnvironment()
-                //         }
-                //         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                //             cobertura coberturaReportFile: 'coverage.xml', 
-                //                       conditionalCoverageTargets: '100,90,80', 
-                //                       lineCoverageTargets: '100,95,85', 
-                //                       onlyStable: false
-                //         }
-                //     }
-                // }
+                stage('Test Coverage') {
+                    agent {
+                        label 'agent_coverage'
+                    }
+                    steps {
+                        unstash name: 'get_code'
+                        script {
+                            logEnvironment()
+                        }
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                            cobertura coberturaReportFile: 'coverage.xml', 
+                                      conditionalCoverageTargets: '100,90,80', 
+                                      lineCoverageTargets: '100,95,85', 
+                                      onlyStable: false
+                        }
+                    }
+                }
                 stage('Static Analysis') {
                     agent {
                         label 'agent_static_analysis'
