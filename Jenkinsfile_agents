@@ -29,10 +29,10 @@ pipeline {
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     unstash name:'get_code'  
                     bat '''
-                        python -m pytest --junitxml=result-unit.xml test/unit
+                        python -m coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m pytest test/unit coverage xml
                     '''
                     junit 'result-unit.xml'
-                    stash name: 'unit_tests_results', includes: 'result-unit.xml'
+                    stash name: 'coverage_results', includes: 'coverage.xml'
                 }
             }
         }
@@ -47,10 +47,8 @@ pipeline {
                 }
                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                     unstash name: 'get_code'
-                    unstash name: 'unit_tests_results'  // Restaurer les résultats des tests unitaires
-                    bat'''
-                        python -m coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m coverage xml
-                    '''
+                    unstash name: 'coverage_results'  // Restaurer les résultats des tests unitaires
+                    
                     cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
                 }
             }
