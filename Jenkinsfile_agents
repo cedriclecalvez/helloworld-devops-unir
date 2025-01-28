@@ -53,10 +53,7 @@ pipeline {
                                 coverage xml
                             '''
                             junit 'result-unit.xml'
-                            cobertura coberturaReportFile: 'coverage.xml', 
-                                      conditionalCoverageTargets: '100,90,80', 
-                                      lineCoverageTargets: '100,95,85', 
-                                      onlyStable: false
+                            stash name: 'coverage_results', includes: 'coverage xml'
                         }
                     }
                 }
@@ -66,6 +63,7 @@ pipeline {
                     }
                     steps {
                         unstash name: 'get_code'
+                        unstash name: 'coverage_results'
                         script {
                             logEnvironment()
                         }
