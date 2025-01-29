@@ -23,7 +23,6 @@ pipeline {
                         label 'agent_unit_test'
                     }
                     steps {
-                        cleanWs()
                         script {
                             logEnvironment()
                         }
@@ -35,6 +34,11 @@ pipeline {
                             '''
                             junit 'result-unit.xml'
                             stash name: 'unit_test_results', includes: 'result-unit.xml'
+                        }
+                    }
+                    post{
+                        always{
+                            cleanWs()
                         }
                     }
                 } 
@@ -51,13 +55,17 @@ pipeline {
                             stash name: 'coverage_results', includes: 'coverage.xml'
                         }
                     }
+                    post{
+                        always{
+                            cleanWs()
+                        }
+                    }
                 }
                 stage('Static Analysis') {
                     agent {
                         label 'agent_static_analysis'
                     }
                     steps {
-                        cleanWs()
                         unstash name: 'get_code'
                         script {
                             logEnvironment()
@@ -67,7 +75,11 @@ pipeline {
                         '''
                         recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')],qualityGates: [[threshold: 8, type: 'TOTAL',unstable: true],[threshold: 10, type: 'TOTAL', unstable: false]]
                         stash name: 'flake8_results', includes: 'flake8.out'
-
+                    }
+                     post{
+                        always{
+                            cleanWs()
+                        }
                     }
                 } 
                 stage('Security Analysis') {
@@ -75,7 +87,6 @@ pipeline {
                         label 'agent_security_analysis'
                     }
                     steps {
-                        cleanWs()
                         unstash name: 'get_code'
                         script {
                             logEnvironment()
@@ -87,13 +98,17 @@ pipeline {
                                      qualityGates: [[threshold: 2, type: 'TOTAL', unstable: true], 
                                                     [threshold: 4, type: 'TOTAL', unstable: false]]
                     }
+                     post{
+                        always{
+                            cleanWs()
+                        }
+                    }
                 } 
                 stage('Start Flask API') {
                     agent {
                         label 'agent_performance'
                     }
                     steps {
-                        cleanWs()
                         script {
                             logEnvironment()
                         }
@@ -106,6 +121,11 @@ pipeline {
                                     start /B python -m flask run --host=0.0.0.0 --port=5000
                                 '''
                             }
+                        }
+                    }
+                     post{
+                        always{
+                            cleanWs()
                         }
                     }
                 }
@@ -127,7 +147,11 @@ pipeline {
                         }
                         perfReport sourceDataFiles: 'flask.jtl'
                         stash name: 'flask_results', includes: 'flask.jtl'
-
+                    }
+                     post{
+                        always{
+                            cleanWs()
+                        }
                     }
                 } 
             }
@@ -135,10 +159,10 @@ pipeline {
     }
     post {
         always {
-            // unstash 'unit_test_results' 
-            // unstash 'coverage_results' 
-            // unstash 'flake8_results' 
-            // unstash 'flask_results' 
+            unstash 'unit_test_results' 
+            unstash 'coverage_results' 
+            unstash 'flake8_results' 
+            unstash 'flask_results' 
             archiveArtifacts artifacts: '**/*.xml, **/*.out, **/*.jtl', fingerprint: true
             echo 'Artifacts archived.'
             cleanWs()
