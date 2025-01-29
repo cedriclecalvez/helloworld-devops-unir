@@ -124,11 +124,11 @@ pipeline {
                             }
                         }
                     }
-                    //  post{
-                    //     always{
-                    //         cleanWs()
-                    //     }
-                    // }
+                     post{
+                        always{
+                            cleanWs()
+                        }
+                    }
                 }
                 stage('Performance Tests') {
                     agent {
