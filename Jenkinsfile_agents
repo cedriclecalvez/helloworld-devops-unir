@@ -34,6 +34,8 @@ pipeline {
                             '''
                             junit 'result-unit.xml'
                             stash name: 'unit_test_results', includes: 'result-unit.xml'
+                            stash name: 'coverage_results', includes: 'coverage.xml'
+
                         }
                     }
                     // post{
@@ -52,7 +54,6 @@ pipeline {
                         }
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
-                            stash name: 'coverage_results', includes: 'coverage.xml'
                         }
                     }
                     // post{
