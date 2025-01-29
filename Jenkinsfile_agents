@@ -38,11 +38,7 @@ pipeline {
 
                         }
                     }
-                    // post{
-                    //     always{
-                    //         cleanWs()
-                    //     }
-                    // }
+                   
                 } 
                 stage('Test Coverage') {
                     agent {
@@ -56,11 +52,7 @@ pipeline {
                             cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
                         }
                     }
-                    post{
-                        always{
-                            cleanWs()
-                        }
-                    }
+                  
                 }
                 stage('Static Analysis') {
                     agent {
@@ -77,11 +69,7 @@ pipeline {
                         recordIssues tools: [flake8(name: 'Flake8', pattern: 'flake8.out')],qualityGates: [[threshold: 8, type: 'TOTAL',unstable: true],[threshold: 10, type: 'TOTAL', unstable: false]]
                         stash name: 'flake8_results', includes: 'flake8.out'
                     }
-                     post{
-                        always{
-                            cleanWs()
-                        }
-                    }
+                    
                 } 
                 stage('Security Analysis') {
                     agent {
@@ -99,11 +87,7 @@ pipeline {
                                      qualityGates: [[threshold: 2, type: 'TOTAL', unstable: true], 
                                                     [threshold: 4, type: 'TOTAL', unstable: false]]
                     }
-                     post{
-                        always{
-                            cleanWs()
-                        }
-                    }
+                   
                 } 
                 stage('Start Flask API') {
                     agent {
