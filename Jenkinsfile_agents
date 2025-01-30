@@ -99,7 +99,7 @@ pipeline {
                             logEnvironment()
                         }
                         catchError(buildResult: 'UNSTABLE', stageResult: 'SUCCESS') {
-                            timeout(time: 120, unit: 'SECONDS') { 
+                            timeout(time: 240, unit: 'SECONDS') { 
                                 echo 'Starting Flask service in background...'
                                 bat '''
                                     set FLASK_APP=app\\api.py
@@ -118,7 +118,7 @@ pipeline {
                         unstash name: 'get_code'
                         script {
                             logEnvironment()
-
+sleep(10)
                             echo 'Starting JMeter...'
                             bat '''
                                 cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
