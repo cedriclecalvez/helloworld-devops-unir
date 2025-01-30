@@ -91,7 +91,7 @@ pipeline {
                         script {
                             logEnvironment()
                         }
-                        catchError(buildResult: 'SUCCESS', stageResult: 'ABORTED') {
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
                             timeout(time: 120, unit: 'SECONDS') { 
                                 echo 'Starting Flask service in background...'
                                 bat '''
@@ -122,11 +122,15 @@ pipeline {
                         perfReport sourceDataFiles: 'flask.jtl'
                         stash name: 'flask_results', includes: 'flask.jtl'
                     }
-                     post{
-                        always{
-                            cleanWs()
-                        }
-                    }
+                     post {
+        always {
+            echo 'Stopping Flask API...'
+            catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') { // ✅ Évite un échec si Flask est déjà arrêté
+                bat 'taskkill /F /IM python.exe /T || echo "Flask was not running"'
+            }
+            cleanWs()
+        }
+    }
                 } 
             }
         }
