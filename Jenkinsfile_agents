@@ -95,6 +95,8 @@ pipeline {
                         label 'agent_performance'
                     }
                     steps {
+                        unstash name: 'get_code'
+
                         script {
                             logEnvironment()
                         }
@@ -117,7 +119,7 @@ pipeline {
                         label 'agent_performance'
                     }
                     steps {
-                        unstash name: 'get_code'
+                        // unstash name: 'get_code'
                         script {
                             logEnvironment()
 
