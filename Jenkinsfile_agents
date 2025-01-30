@@ -95,8 +95,7 @@ pipeline {
                         label 'agent_performance'
                     }
                     steps {
-                        unstash name: 'get_code'
-
+                       
                         script {
                             logEnvironment()
                         }
@@ -109,7 +108,7 @@ pipeline {
                                     set PYTHONPATH=.
                                     python -m flask run --host=0.0.0.0 --port=5000
                                 '''
-                                 echo 'Waiting for Flask to start...'
+                                
                                 
                             }
                         }
@@ -120,7 +119,7 @@ pipeline {
                         label 'agent_performance'
                     }
                     steps {
-                        // unstash name: 'get_code'
+                        unstash name: 'get_code'
                         script {
                             logEnvironment()
 
