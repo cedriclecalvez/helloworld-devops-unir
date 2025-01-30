@@ -33,17 +33,12 @@ pipeline {
                                         coverage xml
                                     '''
                                     junit 'result-unit.xml'
-                                    // 🔹 Vérifier si coverage.xml existe avant de le stash
-                                    bat 'if exist coverage.xml (echo "✅ coverage.xml found!") else (echo "❌ ERROR: coverage.xml NOT found!")'
-                                    bat 'dir %WORKSPACE%'  // 🔹 Vérifier que le fichier est bien là
-
                                     stash name: 'coverage_results', includes: 'coverage.xml'
                                     stash name: 'unit_test_results', includes: 'result-unit.xml'
-
                                 }
                             }
                         } 
-                        stage('Run Coverage') {
+                        stage('Coverage') {
                             agent {
                                 label 'agent_unit_test'
                             }
@@ -53,8 +48,6 @@ pipeline {
                                 }
                                 catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                                     unstash name: 'coverage_results'
-                                    bat 'dir %WORKSPACE%'  // 🔹 Vérifier que le fichier est bien là
-
                                     cobertura coberturaReportFile: 'coverage.xml', 
                                             conditionalCoverageTargets: '100,90,80', 
                                             lineCoverageTargets: '100,95,85', 
@@ -62,10 +55,8 @@ pipeline {
                                 }
                             }
                         }
-                } 
+                    } 
                 }
-                
-                
                 stage('Static Analysis') {
                     agent {
                         label 'agent_static_analysis'
