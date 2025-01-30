@@ -122,7 +122,7 @@ pipeline {
                         unstash name: 'get_code'
                         script {
                             logEnvironment()
-
+                            sleep(10)
                             echo 'Starting JMeter...'
                             bat '''
                                 cd "C:\\Program Files\\apache-jmeter-5.6.3\\bin"
