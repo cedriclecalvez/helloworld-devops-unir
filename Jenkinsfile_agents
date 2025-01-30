@@ -131,10 +131,10 @@ pipeline {
                     }
                     post {
                         always {
-                            echo 'Stopping Flask API...'
-                            catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') { 
-                                bat 'taskkill /F /IM python.exe /T || echo "Flask was not running"'
-                            }
+                            // echo 'Stopping Flask API...'
+                            // catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') { 
+                            //     bat 'taskkill /F /IM python.exe /T || echo "Flask was not running"'
+                            // }
                         cleanWs()
                         }
                     }
