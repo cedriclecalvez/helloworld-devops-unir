@@ -100,7 +100,7 @@ pipeline {
                             logEnvironment()
                         }
                         catchError(buildResult: 'UNSTABLE', stageResult: 'SUCCESS') {
-                            timeout(time: 60, unit: 'SECONDS') { 
+                            timeout(time: 120, unit: 'SECONDS') { 
                                 echo 'Starting Flask service in background...'
                                 bat '''
                                     cd %WORKSPACE%
