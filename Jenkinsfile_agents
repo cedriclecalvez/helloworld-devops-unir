@@ -50,7 +50,6 @@ pipeline {
                             logEnvironment()
                         }
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                               lock(resource: 'coverage-lock') {
                             unstash name: 'coverage_results'
                             bat 'dir %WORKSPACE%'  // 🔹 Vérifier que le fichier est bien là
 
@@ -58,7 +57,6 @@ pipeline {
                                       conditionalCoverageTargets: '100,90,80', 
                                       lineCoverageTargets: '100,95,85', 
                                       onlyStable: false
-                        }
                         }
                     }
                 }
