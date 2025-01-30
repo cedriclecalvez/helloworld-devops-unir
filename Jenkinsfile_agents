@@ -92,7 +92,7 @@ pipeline {
                             logEnvironment()
                         }
                         catchError(buildResult: 'SUCCESS', stageResult: 'ABORTED') {
-                            timeout(time: 90, unit: 'SECONDS') { 
+                            timeout(time: 120, unit: 'SECONDS') { 
                                 echo 'Starting Flask service in background...'
                                 bat '''
                                     set FLASK_APP=app\\api.py
