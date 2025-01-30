@@ -118,6 +118,7 @@ pipeline {
                     }
                     steps {
                         unstash name: 'get_code'
+                        sleep(10)
                         script {
                             logEnvironment()
                             echo 'Starting JMeter...'
