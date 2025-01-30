@@ -99,7 +99,7 @@ pipeline {
                             logEnvironment()
                         }
                         catchError(buildResult: 'UNSTABLE', stageResult: 'SUCCESS') {
-                            timeout(time: 240, unit: 'SECONDS') { 
+                            // timeout(time: 240, unit: 'SECONDS') { 
                                 echo 'Starting Flask service in background...'
                                 bat '''
                                     set FLASK_APP=app\\api.py
@@ -108,7 +108,7 @@ pipeline {
                                 '''
                                  echo 'Waiting for Flask to start...'
                                 
-                            }
+                            // }
                         }
                     }
                 }
