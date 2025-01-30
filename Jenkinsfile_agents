@@ -16,50 +16,53 @@ pipeline {
         }
         stage('Run Tests') {
             parallel {
-                stage('Unit Tests') {
-                    agent {
-                        label 'agent_unit_test'
-                    }
-                    steps {
-                        script {
-                            logEnvironment()
+                stages{
+                    stage('Unit Tests') {
+                        agent {
+                            label 'agent_unit_test'
                         }
-                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            unstash name:'get_code'  
-                            bat '''
-                                coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m pytest --junitxml=result-unit.xml test/unit
-                                coverage xml
-                            '''
-                            junit 'result-unit.xml'
-                            // 🔹 Vérifier si coverage.xml existe avant de le stash
-                            bat 'if exist coverage.xml (echo "✅ coverage.xml found!") else (echo "❌ ERROR: coverage.xml NOT found!")'
-                            bat 'dir %WORKSPACE%'  // 🔹 Vérifier que le fichier est bien là
+                        steps {
+                            script {
+                                logEnvironment()
+                            }
+                            catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                                unstash name:'get_code'  
+                                bat '''
+                                    coverage run --branch --source=app --omit=app/__init__.py,app/api.py -m pytest --junitxml=result-unit.xml test/unit
+                                    coverage xml
+                                '''
+                                junit 'result-unit.xml'
+                                // 🔹 Vérifier si coverage.xml existe avant de le stash
+                                bat 'if exist coverage.xml (echo "✅ coverage.xml found!") else (echo "❌ ERROR: coverage.xml NOT found!")'
+                                bat 'dir %WORKSPACE%'  // 🔹 Vérifier que le fichier est bien là
 
-                            stash name: 'coverage_results', includes: 'coverage.xml'
-                            stash name: 'unit_test_results', includes: 'result-unit.xml'
+                                stash name: 'coverage_results', includes: 'coverage.xml'
+                                stash name: 'unit_test_results', includes: 'result-unit.xml'
 
+                            }
                         }
-                    }
-                } 
-                stage('Test Coverage') {
-                    agent {
-                        label 'agent_unit_test'
-                    }
-                    steps {
-                        script {
-                            logEnvironment()
+                    } 
+                    stage('Test Coverage') {
+                        agent {
+                            label 'agent_unit_test'
                         }
-                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            unstash name: 'coverage_results'
-                            bat 'dir %WORKSPACE%'  // 🔹 Vérifier que le fichier est bien là
+                        steps {
+                            script {
+                                logEnvironment()
+                            }
+                            catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                                unstash name: 'coverage_results'
+                                bat 'dir %WORKSPACE%'  // 🔹 Vérifier que le fichier est bien là
 
-                            cobertura coberturaReportFile: 'coverage.xml', 
-                                      conditionalCoverageTargets: '100,90,80', 
-                                      lineCoverageTargets: '100,95,85', 
-                                      onlyStable: false
+                                cobertura coberturaReportFile: 'coverage.xml', 
+                                        conditionalCoverageTargets: '100,90,80', 
+                                        lineCoverageTargets: '100,95,85', 
+                                        onlyStable: false
+                            }
                         }
                     }
                 }
+                
                 stage('Static Analysis') {
                     agent {
                         label 'agent_static_analysis'
