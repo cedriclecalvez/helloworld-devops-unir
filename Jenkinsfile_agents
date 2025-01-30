@@ -109,7 +109,11 @@ pipeline {
                                     start /B python -m flask run --host=0.0.0.0 --port=5000
                                 '''
                                  echo 'Waiting for Flask to start...'
-                                
+                                  // Ajouter une attente explicite pour Flask (vérifier si le port 5000 est ouvert)
+                                bat '''
+                                    :loop
+                                    curl http://localhost:5000/health || goto loop
+                                '''
                             }
                         }
                     }
