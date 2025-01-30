@@ -31,6 +31,8 @@ pipeline {
                                 coverage xml
                             '''
                             junit 'result-unit.xml'
+                            // 🔹 Vérifier si coverage.xml existe avant de le stash
+                            bat 'if exist coverage.xml (echo "✅ coverage.xml found!") else (echo "❌ ERROR: coverage.xml NOT found!")'
                             stash name: 'coverage_results', includes: 'coverage.xml'
                             stash name: 'unit_test_results', includes: 'result-unit.xml'
 
