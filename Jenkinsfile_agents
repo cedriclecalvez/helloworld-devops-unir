@@ -104,22 +104,10 @@ pipeline {
                                 bat '''
                                     set FLASK_APP=app\\api.py
                                     set PYTHONPATH=.
-                                    start /B python -m flask run --host=0.0.0.0 --port=5000
+                                    python -m flask run --host=0.0.0.0 --port=5000
                                 '''
                                  echo 'Waiting for Flask to start...'
-                                bat '''
-                                    for /L %%i in (1,1,10) do (
-                                        curl -s -o nul http://127.0.0.1:5000 && (
-                                            echo Flask is up!
-                                            exit /b 0
-                                        )
-                                        echo Waiting for Flask...
-                                        timeout /t 3
-                                    )
-                                    echo Flask did not start after 10 retries!
-                                    exit /b 1
-
-                                '''
+                                
                             }
                         }
                     }
