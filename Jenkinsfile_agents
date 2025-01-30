@@ -31,8 +31,8 @@ pipeline {
                                 coverage xml
                             '''
                             junit 'result-unit.xml'
-                            stash name: 'unit_test_results', includes: 'result-unit.xml'
                             stash name: 'coverage_results', includes: 'coverage.xml'
+                            stash name: 'unit_test_results', includes: 'result-unit.xml'
 
                         }
                     }
@@ -47,6 +47,8 @@ pipeline {
                         }
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                             unstash name:'coverage_results'  
+                            // Vérifie si coverage.xml est présent après unstash
+                             bat 'dir %WORKSPACE%'       
                             cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
                         }
                     }
