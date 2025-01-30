@@ -46,10 +46,15 @@ pipeline {
                             logEnvironment()
                         }
                         catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                            unstash name:'coverage_results'  
-                            // Vérifie si coverage.xml est présent après unstash
-                             bat 'dir %WORKSPACE%'       
-                            cobertura coberturaReportFile: 'coverage.xml', conditionalCoverageTargets: '100,90,80', lineCoverageTargets: '100,95,85', onlyStable: false
+                               lock(resource: 'coverage-lock') {
+                            unstash name: 'coverage_results'
+                            bat 'dir %WORKSPACE%'  // 🔹 Vérifier que le fichier est bien là
+
+                            cobertura coberturaReportFile: 'coverage.xml', 
+                                      conditionalCoverageTargets: '100,90,80', 
+                                      lineCoverageTargets: '100,95,85', 
+                                      onlyStable: false
+                        }
                         }
                     }
                 }
